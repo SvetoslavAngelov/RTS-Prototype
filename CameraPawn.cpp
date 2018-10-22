@@ -10,8 +10,8 @@
 ACameraPawn::ACameraPawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true; 
+	//PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bStartWithTickEnabled = true; 
 
 	// Set up root component 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
@@ -37,11 +37,7 @@ ACameraPawn::ACameraPawn()
 void ACameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (MovementComponent)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Movement component active!"));
-	}
+
 }
 
 // Called every frame
@@ -51,10 +47,41 @@ void ACameraPawn::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void ACameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+UPawnMovementComponent* ACameraPawn::GetMovementComponent() const
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	return MovementComponent; 
+}
 
+void ACameraPawn::MoveLeft() const
+{
+	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
+	{
+		MovementComponent->AddInputVector(GetActorRightVector() * -CameraMoveSpeed);
+	}
+}
+
+
+void ACameraPawn::MoveRight() const
+{
+	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
+	{
+		MovementComponent->AddInputVector(GetActorRightVector() * CameraMoveSpeed);
+	}
+}
+
+void ACameraPawn::MoveForward() const
+{
+	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
+	{
+		MovementComponent->AddInputVector(GetActorForwardVector() * CameraMoveSpeed);
+	}
+}
+
+void ACameraPawn::MoveBackward() const
+{
+	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
+	{
+		MovementComponent->AddInputVector(GetActorForwardVector() * -CameraMoveSpeed);
+	}
 }
 

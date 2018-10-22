@@ -14,4 +14,30 @@ class STRATEGYAFTERNOON_API AStrategyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+public: 
+	// Default constructor
+	AStrategyPlayerController(); 
+	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override; 
+
+	// Called every frame 
+	virtual void Tick(float DeltaTime) override; 
+
+	// Set up player input 
+	virtual void SetupInputComponent() override; 
+
+	// Mouse select interface
+	void OnMousePressed(); 
+	void OnMouseReleased();
+
+	// Camera movement interface 
+	void MoveCamera(FVector2D const& MousePosition, FIntPoint const& ViewportSize) const;
+
+private: 
+	UPROPERTY()
+	class ACameraPawn* CameraPawn; 
+
+	UPROPERTY()
+	bool bIsSelected;
 };

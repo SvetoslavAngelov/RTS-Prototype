@@ -21,8 +21,21 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual class UPawnMovementComponent* GetMovementComponent() const override; 
+
+	// Camera movement interface
+	void MoveLeft() const;
+	void MoveRight() const;
+	void MoveForward() const;
+	void MoveBackward() const;
+
+	// Camera pan speed 
+	UPROPERTY(EditAnywhere, Category = "Camera options")
+	float CameraMoveSpeed = 150.f;
+
+	// Movement component
+	UPROPERTY(VisibleAnywhere)
+	class UCameraPawnMovementComponent* MovementComponent;
 
 private: 
 	// Pawn root
@@ -37,7 +50,5 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* Camera;
 
-	// Movement component
-	UPROPERTY(VisibleAnywhere)
-	class UCameraPawnMovementComponent* MovementComponent; 
+
 };
