@@ -56,7 +56,7 @@ void ACameraPawn::MoveLeft() const
 {
 	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
 	{
-		MovementComponent->AddInputVector(GetActorRightVector() * -CameraMoveSpeed);
+		MovementComponent->AddInputVector(GetActorRightVector() * -1.f);
 	}
 }
 
@@ -65,7 +65,7 @@ void ACameraPawn::MoveRight() const
 {
 	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
 	{
-		MovementComponent->AddInputVector(GetActorRightVector() * CameraMoveSpeed);
+		MovementComponent->AddInputVector(GetActorRightVector());
 	}
 }
 
@@ -73,7 +73,7 @@ void ACameraPawn::MoveForward() const
 {
 	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
 	{
-		MovementComponent->AddInputVector(GetActorForwardVector() * CameraMoveSpeed);
+		MovementComponent->AddInputVector(GetActorForwardVector());
 	}
 }
 
@@ -81,7 +81,6 @@ void ACameraPawn::MoveBackward() const
 {
 	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
 	{
-		MovementComponent->AddInputVector(GetActorForwardVector() * -CameraMoveSpeed);
+		MovementComponent->AddInputVector(GetActorForwardVector() * -1.f);
 	}
 }
-

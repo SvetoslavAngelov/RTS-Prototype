@@ -9,6 +9,7 @@ AStrategyPlayerController::AStrategyPlayerController()
 	// Shows mouse cursor and enables click events
 	bEnableClickEvents = true;
 	bIsSelected = false;
+	bIsVariableInitialized = false;
 }
 
 void AStrategyPlayerController::BeginPlay()
@@ -16,14 +17,10 @@ void AStrategyPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	bShowMouseCursor = true;
-
 	CameraPawn = Cast<ACameraPawn>(GetPawn());
 
-	if (CameraPawn)
-	{
-		Possess(CameraPawn);
-		UE_LOG(LogTemp, Warning, TEXT("Camera pawn: %s "), *CameraPawn->GetName());
-	}
+	// TODO Works only in editor window not in standalone game
+	GetViewportSize(ViewportSize.X, ViewportSize.Y);
 }
 
 void AStrategyPlayerController::Tick(float DeltaTime)
@@ -31,17 +28,16 @@ void AStrategyPlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	FVector2D MousePosition; 
-	FIntPoint ViewportSize;
 	
-	GetViewportSize(ViewportSize.X, ViewportSize.Y);
-
 	if (GetMousePosition(MousePosition.X, MousePosition.Y))
 	{
+		DefineSelectionBox();
 		MoveCamera(MousePosition, ViewportSize);
 	}
-	   
+	
 	if (bIsSelected)
 	{
+		
 		UE_LOG(LogTemp, Warning, TEXT("Mouse selected!"));
 	}
 }
@@ -56,7 +52,7 @@ void AStrategyPlayerController::SetupInputComponent()
 
 void AStrategyPlayerController::OnMousePressed()
 {
-	bIsSelected = true; 
+	bIsSelected = true;
 }
 
 void AStrategyPlayerController::OnMouseReleased()
@@ -84,5 +80,24 @@ void AStrategyPlayerController::MoveCamera(FVector2D const& MousePosition, FIntP
 		{
 			CameraPawn->MoveBackward();
 		}
+	}
+}
+
+void AStrategyPlayerController::DefineSelectionBox()
+{
+	if (bIsSelected && !bIsVariableInitialized)
+	{
+		GetMousePosition(SelectionBox.PointA.X, SelectionBox.PointA.Y);
+		SelectionBox.PointB = SelectionBox.PointA;
+		bIsVariableInitialized = true;
+	}
+	else if (bIsSelected && bIsVariableInitialized)
+	{
+		GetMousePosition(SelectionBox.PointB.X, SelectionBox.PointB.Y);
+	}
+	else if (!bIsSelected)
+	{
+		SelectionBox.Reset();
+		bIsVariableInitialized = false;
 	}
 }

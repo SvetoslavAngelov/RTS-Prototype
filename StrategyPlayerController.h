@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "SelectionBox.h"
 #include "StrategyPlayerController.generated.h"
 
 /**
@@ -30,14 +31,31 @@ public:
 	// Mouse select interface
 	void OnMousePressed(); 
 	void OnMouseReleased();
+	void DefineSelectionBox(); 
 
 	// Camera movement interface 
 	void MoveCamera(FVector2D const& MousePosition, FIntPoint const& ViewportSize) const;
 
-private: 
+	// Contains the coordinates of the mouse drag selection box
 	UPROPERTY()
-	class ACameraPawn* CameraPawn; 
+	FSelectionBox SelectionBox;
 
+private: 
+	// Pointer to the camera pawn 
+	UPROPERTY()
+	class ACameraPawn const* CameraPawn; 
+
+	// Current view port size. 
+	// NOTE: This is different from resolution
+	UPROPERTY()
+	FIntPoint ViewportSize; 
+
+	// Checks if left mouse button is pressed 
 	UPROPERTY()
 	bool bIsSelected;
+
+	// Checks if the selection box start coordinates have been initialized
+	UPROPERTY()
+	bool bIsVariableInitialized;
 };
+

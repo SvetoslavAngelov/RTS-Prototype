@@ -29,10 +29,6 @@ public:
 	void MoveForward() const;
 	void MoveBackward() const;
 
-	// Camera pan speed 
-	UPROPERTY(EditAnywhere, Category = "Camera options")
-	float CameraMoveSpeed = 150.f;
-
 	// Movement component
 	UPROPERTY(VisibleAnywhere)
 	class UCameraPawnMovementComponent* MovementComponent;
