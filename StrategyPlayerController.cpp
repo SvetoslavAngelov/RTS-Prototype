@@ -2,6 +2,8 @@
 
 #include "StrategyPlayerController.h"
 #include "CameraPawn.h"
+#include "Public/Units/BattleUnitBase.h"
+#include "Public/UnitManager.h"
 
 
 AStrategyPlayerController::AStrategyPlayerController()
@@ -10,6 +12,12 @@ AStrategyPlayerController::AStrategyPlayerController()
 	bEnableClickEvents = true;
 	bIsSelected = false;
 	bIsVariableInitialized = false;
+
+	MousePosition = { 0.f, 0.f };
+	ViewportSize = { 0, 0 };
+
+	NewDispatchDestination = { 0.f, 0.f, 0.f };
+
 }
 
 void AStrategyPlayerController::BeginPlay()
@@ -26,20 +34,22 @@ void AStrategyPlayerController::BeginPlay()
 void AStrategyPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	FVector2D MousePosition; 
 	
 	if (GetMousePosition(MousePosition.X, MousePosition.Y))
 	{
 		DefineSelectionBox();
-		MoveCamera(MousePosition, ViewportSize);
+		MoveCamera();
 	}
 	
 	if (bIsSelected)
 	{
-		
-		UE_LOG(LogTemp, Warning, TEXT("Mouse selected!"));
+		FHitResult HitResult; 
+		GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel , true, HitResult);
+
+		UE_LOG(LogTemp, Warning, TEXT("Mouse selected! %s"), *HitResult.GetActor()->GetName());
 	}
+
+
 }
 
 void AStrategyPlayerController::SetupInputComponent()
@@ -48,6 +58,8 @@ void AStrategyPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("Select", IE_Pressed, this, &AStrategyPlayerController::OnMousePressed);
 	InputComponent->BindAction("Select", IE_Released, this, &AStrategyPlayerController::OnMouseReleased);
+
+	InputComponent->BindAction("Dispatch", IE_Pressed, this, &AStrategyPlayerController::SetUnitDispatchLocation);
 }
 
 void AStrategyPlayerController::OnMousePressed()
@@ -60,7 +72,7 @@ void AStrategyPlayerController::OnMouseReleased()
 	bIsSelected = false; 
 }
 
-void AStrategyPlayerController::MoveCamera(FVector2D const& MousePosition, FIntPoint const& ViewportSize) const
+void AStrategyPlayerController::MoveCamera() const
 {
 	if (CameraPawn)
 	{
@@ -87,17 +99,28 @@ void AStrategyPlayerController::DefineSelectionBox()
 {
 	if (bIsSelected && !bIsVariableInitialized)
 	{
-		GetMousePosition(SelectionBox.PointA.X, SelectionBox.PointA.Y);
-		SelectionBox.PointB = SelectionBox.PointA;
+		SelectionBox.PointB = SelectionBox.PointA = MousePosition;
 		bIsVariableInitialized = true;
 	}
 	else if (bIsSelected && bIsVariableInitialized)
 	{
-		GetMousePosition(SelectionBox.PointB.X, SelectionBox.PointB.Y);
-	}
+		SelectionBox.PointB = MousePosition;
+	} 
 	else if (!bIsSelected)
 	{
 		SelectionBox.Reset();
 		bIsVariableInitialized = false;
+	}
+}
+
+
+void AStrategyPlayerController::SetUnitDispatchLocation()
+{
+	FHitResult HitResult; 
+	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, true, HitResult))
+	{
+		// Set a new location for the units to move to
+		// TODO add a check for minimum distance to allow proper animation display (when animations are implemented)
+		NewDispatchDestination = HitResult.ImpactPoint;
 	}
 }

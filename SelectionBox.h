@@ -18,6 +18,7 @@ struct FSelectionBox {
 	// Restore original values
 	void Reset();
 
+	// Data members
 	UPROPERTY()
 	FVector2D PointA; 
 

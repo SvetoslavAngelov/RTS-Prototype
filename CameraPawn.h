@@ -45,6 +45,4 @@ private:
 	// Camera actor 
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* Camera;
-
-
 };

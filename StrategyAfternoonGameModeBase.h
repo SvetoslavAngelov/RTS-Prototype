@@ -13,5 +13,11 @@ UCLASS()
 class STRATEGYAFTERNOON_API AStrategyAfternoonGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public: 
+	virtual void BeginPlay() override; 
+
+private: 
+	UPROPERTY()
+	class AUnitManager* UnitManager; 
 };

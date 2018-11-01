@@ -2,3 +2,8 @@
 
 #include "StrategyAfternoonGameModeBase.h"
 
+
+void AStrategyAfternoonGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+}

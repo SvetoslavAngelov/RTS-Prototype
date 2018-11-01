@@ -33,8 +33,14 @@ public:
 	void OnMouseReleased();
 	void DefineSelectionBox(); 
 
+	// Translates the selection box screenspace coordinates to world space
+	bool SelectionBoxToWorldSpace() const;
+
+	void SetUnitDispatchLocation();
+
+
 	// Camera movement interface 
-	void MoveCamera(FVector2D const& MousePosition, FIntPoint const& ViewportSize) const;
+	void MoveCamera() const;
 
 	// Contains the coordinates of the mouse drag selection box
 	UPROPERTY()
@@ -50,6 +56,10 @@ private:
 	UPROPERTY()
 	FIntPoint ViewportSize; 
 
+	// Holds the current mouse position
+	UPROPERTY()
+	FVector2D MousePosition;
+
 	// Checks if left mouse button is pressed 
 	UPROPERTY()
 	bool bIsSelected;
@@ -57,5 +67,11 @@ private:
 	// Checks if the selection box start coordinates have been initialized
 	UPROPERTY()
 	bool bIsVariableInitialized;
+
+	// New location for the battle units to move to
+	UPROPERTY()
+	FVector NewDispatchDestination;
+
+
 };
 
