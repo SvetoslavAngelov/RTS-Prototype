@@ -28,16 +28,25 @@ public:
 	// Set up player input 
 	virtual void SetupInputComponent() override; 
 
-	// Mouse select interface
-	void OnMousePressed(); 
-	void OnMouseReleased();
+	/**
+	* SELECTION INTERFACE
+	*/
+	// Sets the LMB flag
+	void OnLMBPressed(); 
+	void OnLMBReleased();
+
+	// Sets the RMB flag and updates the new dispatch destination
+	void OnRMBPressed(); 
+	void OnRMBReleased();
+
+	// Defines the dimensions of the selection box in screen space
 	void DefineSelectionBox(); 
 
-	// Translates the selection box screenspace coordinates to world space
-	bool SelectionBoxToWorldSpace() const;
+	// Defines the dimensions of the selection box in world space
+	void DefineSelectionBoxToWorld();
 
-	void SetUnitDispatchLocation();
-
+	// Sets the selection box dimensions back to defaults (0)
+	void SelectionBoxReset();
 
 	// Camera movement interface 
 	void MoveCamera() const;
@@ -45,6 +54,10 @@ public:
 	// Contains the coordinates of the mouse drag selection box
 	UPROPERTY()
 	FSelectionBox SelectionBox;
+
+	// Containst the coordinates of the mouse drag selection box to world space 
+	UPROPERTY()
+	FSelectionBox SelectionBoxToWorld;
 
 private: 
 	// Pointer to the camera pawn 
@@ -62,16 +75,22 @@ private:
 
 	// Checks if left mouse button is pressed 
 	UPROPERTY()
-	bool bIsSelected;
+	bool bIsLMBPressed;
+
+	// Checks if right mouse button is pressed
+	UPROPERTY()
+	bool bIsRMBPressed;
 
 	// Checks if the selection box start coordinates have been initialized
 	UPROPERTY()
-	bool bIsVariableInitialized;
+	bool bIsSelectBoxInit;
+
+	// Checks if the selection box to world start coordinates have been initialized
+	UPROPERTY()
+	bool bIsSelectBoxToWorldInit;
 
 	// New location for the battle units to move to
 	UPROPERTY()
 	FVector NewDispatchDestination;
-
-
 };
 

@@ -24,6 +24,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-private: 
-	bool bIsActive; 
+	// Checks if the unit is currently selected by the player controller
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsActive;
 };

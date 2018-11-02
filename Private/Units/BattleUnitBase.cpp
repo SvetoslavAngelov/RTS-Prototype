@@ -11,7 +11,7 @@ ABattleUnitBase::ABattleUnitBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// TODO For debug only
-	bIsActive = true;
+	bIsActive = false;
 }
 
 // Called when the game starts or when spawned

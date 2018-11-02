@@ -22,8 +22,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ObjectType")
 	void SpawnUnit(UPARAM() TSubclassOf<class ABattleUnitBase> UnitType, FVector const& SpawnLocation);
 
-	// Destroys a battle unit and removes it from the battlefield
-	void DestroyUnit(class ABattleUnit* BattleUnit);
+	// Destroys a battle unit and removes it from the array of active units
+	void DestroyUnit(class ABattleUnitBase* BattleUnit);
+
+	void Debug();
 
 private: 
 	UPROPERTY()

@@ -15,6 +15,12 @@ struct FSelectionBox {
 	// Default constructor
 	FSelectionBox();
 
+	// Constructor from float
+	FSelectionBox(float PointAX, float PointAY, float PointBX, float PointBY);
+
+	// Constructor from FVector2D
+	FSelectionBox(FVector2D const& PointA, FVector2D const& PointB);
+
 	// Restore original values
 	void Reset();
 

@@ -7,21 +7,13 @@
 // Sets default values
 AUnitManager::AUnitManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
-// Called when the game starts or when spawned
 void AUnitManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-}
-
-
-void AUnitManager::DestroyUnit(class ABattleUnit* BattleUnit)
-{
 
 }
 
@@ -31,4 +23,18 @@ void AUnitManager::SpawnUnit(UPARAM() TSubclassOf<class ABattleUnitBase> UnitTyp
 	FTransform TransformData;
 	TransformData.SetLocation(SpawnLocation);
 	BattleUnits.Add(GetWorld()->SpawnActor<ABattleUnitBase>(UnitType, TransformData, SpawnParameters));
+}
+
+void AUnitManager::DestroyUnit(ABattleUnitBase* BattleUnit)
+{
+	if (BattleUnit)
+	{
+		BattleUnits.Pop(BattleUnit);
+		BattleUnit->Destroy();
+	}
+}
+
+void AUnitManager::Debug()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Alive!"));
 }

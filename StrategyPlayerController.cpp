@@ -2,22 +2,25 @@
 
 #include "StrategyPlayerController.h"
 #include "CameraPawn.h"
-#include "Public/Units/BattleUnitBase.h"
 #include "Public/UnitManager.h"
+#include "StrategyAfternoonGameModeBase.h"
+#include "Engine/World.h"
 
 
 AStrategyPlayerController::AStrategyPlayerController()
 {
 	// Shows mouse cursor and enables click events
 	bEnableClickEvents = true;
-	bIsSelected = false;
-	bIsVariableInitialized = false;
+	bIsLMBPressed = false;
+	bIsRMBPressed = false;
+	bIsSelectBoxInit = false;
+	bIsSelectBoxToWorldInit = false;
 
 	MousePosition = { 0.f, 0.f };
 	ViewportSize = { 0, 0 };
 
 	NewDispatchDestination = { 0.f, 0.f, 0.f };
-
+	
 }
 
 void AStrategyPlayerController::BeginPlay()
@@ -37,40 +40,60 @@ void AStrategyPlayerController::Tick(float DeltaTime)
 	
 	if (GetMousePosition(MousePosition.X, MousePosition.Y))
 	{
-		DefineSelectionBox();
+		// TODO Track mouse world position
 		MoveCamera();
+		if (bIsLMBPressed)
+		{
+			DefineSelectionBox();
+			DefineSelectionBoxToWorld();
+			// TODO Disselect previous units
+			// TODO Select new units 
+		}
+		if (bIsRMBPressed)
+		{
+			// TODO Dispatch units 
+		}
+		SelectionBoxReset();
 	}
-	
-	if (bIsSelected)
-	{
-		FHitResult HitResult; 
-		GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel , true, HitResult);
-
-		UE_LOG(LogTemp, Warning, TEXT("Mouse selected! %s"), *HitResult.GetActor()->GetName());
-	}
-
-
 }
 
 void AStrategyPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent(); 
 
-	InputComponent->BindAction("Select", IE_Pressed, this, &AStrategyPlayerController::OnMousePressed);
-	InputComponent->BindAction("Select", IE_Released, this, &AStrategyPlayerController::OnMouseReleased);
+	InputComponent->BindAction("Select", IE_Pressed, this, &AStrategyPlayerController::OnLMBPressed);
+	InputComponent->BindAction("Select", IE_Released, this, &AStrategyPlayerController::OnLMBReleased);
 
-	InputComponent->BindAction("Dispatch", IE_Pressed, this, &AStrategyPlayerController::SetUnitDispatchLocation);
+	InputComponent->BindAction("Dispatch", IE_Pressed, this, &AStrategyPlayerController::OnRMBPressed);
+	InputComponent->BindAction("Dispatch", IE_Released, this, &AStrategyPlayerController::OnRMBReleased);
 }
 
-void AStrategyPlayerController::OnMousePressed()
+void AStrategyPlayerController::OnLMBPressed()
 {
-	bIsSelected = true;
+	bIsLMBPressed = true;
 }
 
-void AStrategyPlayerController::OnMouseReleased()
+void AStrategyPlayerController::OnLMBReleased()
 {
-	bIsSelected = false; 
+	bIsLMBPressed = false;
 }
+
+void AStrategyPlayerController::OnRMBPressed()
+{
+	FHitResult HitResult;
+	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, true, HitResult))
+	{
+		NewDispatchDestination = HitResult.ImpactPoint;
+	}
+	bIsRMBPressed = true; 
+}
+
+void AStrategyPlayerController::OnRMBReleased()
+{
+	bIsRMBPressed = false; 
+	NewDispatchDestination = { 0.f, 0.f, 0.f };
+}
+
 
 void AStrategyPlayerController::MoveCamera() const
 {
@@ -97,30 +120,32 @@ void AStrategyPlayerController::MoveCamera() const
 
 void AStrategyPlayerController::DefineSelectionBox()
 {
-	if (bIsSelected && !bIsVariableInitialized)
+	if (!bIsSelectBoxInit)
 	{
 		SelectionBox.PointB = SelectionBox.PointA = MousePosition;
-		bIsVariableInitialized = true;
+		bIsSelectBoxInit = true;
 	}
-	else if (bIsSelected && bIsVariableInitialized)
-	{
 		SelectionBox.PointB = MousePosition;
-	} 
-	else if (!bIsSelected)
+}
+
+void AStrategyPlayerController::SelectionBoxReset()
+{
+	if (!bIsLMBPressed)
 	{
 		SelectionBox.Reset();
-		bIsVariableInitialized = false;
+		bIsSelectBoxInit = false;
+		bIsSelectBoxToWorldInit = false;
 	}
 }
 
-
-void AStrategyPlayerController::SetUnitDispatchLocation()
+void AStrategyPlayerController::DefineSelectionBoxToWorld()
 {
-	FHitResult HitResult; 
-	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, true, HitResult))
+	FHitResult HitResult;
+	if (!bIsSelectBoxToWorldInit)
 	{
-		// Set a new location for the units to move to
-		// TODO add a check for minimum distance to allow proper animation display (when animations are implemented)
-		NewDispatchDestination = HitResult.ImpactPoint;
+		GetHitResultAtScreenPosition(SelectionBox.PointA, CurrentClickTraceChannel, false, HitResult);
+		SelectionBoxToWorld.PointB = SelectionBoxToWorld.PointA = { HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y };
 	}
+	GetHitResultAtScreenPosition(SelectionBox.PointB, CurrentClickTraceChannel, false, HitResult);
+	SelectionBoxToWorld.PointB = { HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y };
 }
