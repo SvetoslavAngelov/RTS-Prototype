@@ -3,28 +3,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "SelectionBox.h"
-#include "UnitManager.generated.h"
+#include "GameFramework/SpectatorPawn.h"
+#include "BattleUnitManager.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
-class STRATEGYAFTERNOON_API AUnitManager : public AActor
+class STRATEGYAFTERNOON_API ABattleUnitManager : public ASpectatorPawn
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
-	AUnitManager();
+	ABattleUnitManager();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	// Spawn new battle unit on the battlefield at the selected spawn location
-	void SpawnUnit(TSubclassOf<class ABattleUnitBase> UnitType, FVector const& SpawnLocation);
+	UFUNCTION(BlueprintCallable, Category = "ObjectType")
+	void SpawnUnit(UPARAM() TSubclassOf<class ABattleUnitBase> UnitType, FVector const& SpawnLocation);
 
 	// Destroys a battle unit and removes it from the array of active units
 	void DestroyUnit(class ABattleUnitBase* BattleUnit);
- 
+
+	void Debug();
+
+private:
 	UPROPERTY()
-	TArray<class ABattleUnitBase*> BattleUnits; 
+	TArray<class ABattleUnitBase*> BattleUnits;
 };

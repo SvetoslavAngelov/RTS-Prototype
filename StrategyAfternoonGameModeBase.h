@@ -16,4 +16,9 @@ class STRATEGYAFTERNOON_API AStrategyAfternoonGameModeBase : public AGameModeBas
 public: 
 	virtual void BeginPlay() override; 
 
+	UFUNCTION(BlueprintCallable, Category = "UnitSpawn")
+	void SpawnBattleUnit(UPARAM() TSubclassOf<class ABattleUnitBase> UnitType, FVector const& SpawnLocation);
+
+	UPROPERTY(BlueprintReadOnly, Category = "UnitManager")
+	class AUnitManager* UnitManager; 
 };

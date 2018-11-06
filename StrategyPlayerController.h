@@ -42,27 +42,27 @@ public:
 	// Defines the dimensions of the selection box in screen space
 	void DefineSelectionBox(); 
 
-	// Defines the dimensions of the selection box in world space
-	void DefineSelectionBoxToWorld();
-
 	// Sets the selection box dimensions back to defaults (0)
 	void SelectionBoxReset();
 
 	// Camera movement interface 
 	void MoveCamera() const;
 
+	void SelectMultipleUnits();
+
+	void SelectSingleUnit();
+
 	// Contains the coordinates of the mouse drag selection box
 	UPROPERTY()
 	FSelectionBox SelectionBox;
-
-	// Containst the coordinates of the mouse drag selection box to world space 
-	UPROPERTY()
-	FSelectionBox SelectionBoxToWorld;
 
 private: 
 	// Pointer to the camera pawn 
 	UPROPERTY()
 	class ACameraPawn const* CameraPawn; 
+
+	// Unit manager which handles spawning and destroying of battle units
+	class AUnitManager const* UnitManager;
 
 	// Current view port size. 
 	// NOTE: This is different from resolution
@@ -80,14 +80,6 @@ private:
 	// Checks if right mouse button is pressed
 	UPROPERTY()
 	bool bIsRMBPressed;
-
-	// Checks if the selection box start coordinates have been initialized
-	UPROPERTY()
-	bool bIsSelectBoxInit;
-
-	// Checks if the selection box to world start coordinates have been initialized
-	UPROPERTY()
-	bool bIsSelectBoxToWorldInit;
 
 	// New location for the battle units to move to
 	UPROPERTY()

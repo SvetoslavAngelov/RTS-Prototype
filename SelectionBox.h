@@ -24,10 +24,17 @@ struct FSelectionBox {
 	// Restore original values
 	void Reset();
 
+	bool isDragging() const;
+
+	FBox2D Absolute() const; 
+
 	// Data members
 	UPROPERTY()
 	FVector2D PointA; 
 
 	UPROPERTY()
 	FVector2D PointB;
+
+	// Checks if point A in initialized 
+	bool bIsInitialized;
 };

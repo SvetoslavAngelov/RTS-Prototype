@@ -1,23 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "UnitManager.h"
+#include "BattleUnitManager.h"
 #include "Engine/World.h"
 #include "BattleUnitBase.h"
 
 // Sets default values
-AUnitManager::AUnitManager()
+ABattleUnitManager::ABattleUnitManager()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
 }
 
-void AUnitManager::BeginPlay()
+void ABattleUnitManager::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-void AUnitManager::SpawnUnit(TSubclassOf<class ABattleUnitBase> UnitType, FVector const& SpawnLocation)
+void ABattleUnitManager::SpawnUnit(UPARAM() TSubclassOf<class ABattleUnitBase> UnitType, FVector const& SpawnLocation)
 {
 	FActorSpawnParameters SpawnParameters;
 	FTransform TransformData;
@@ -25,11 +25,16 @@ void AUnitManager::SpawnUnit(TSubclassOf<class ABattleUnitBase> UnitType, FVecto
 	BattleUnits.Add(GetWorld()->SpawnActor<ABattleUnitBase>(UnitType, TransformData, SpawnParameters));
 }
 
-void AUnitManager::DestroyUnit(ABattleUnitBase* BattleUnit)
+void ABattleUnitManager::DestroyUnit(ABattleUnitBase* BattleUnit)
 {
 	if (BattleUnit)
 	{
 		BattleUnits.Pop(BattleUnit);
 		BattleUnit->Destroy();
 	}
+}
+
+void ABattleUnitManager::Debug()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Alive!"));
 }

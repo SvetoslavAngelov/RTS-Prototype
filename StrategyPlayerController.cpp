@@ -3,6 +3,7 @@
 #include "StrategyPlayerController.h"
 #include "CameraPawn.h"
 #include "Public/UnitManager.h"
+#include "Public/Units/BattleUnitBase.h"
 #include "StrategyAfternoonGameModeBase.h"
 #include "Engine/World.h"
 
@@ -13,8 +14,6 @@ AStrategyPlayerController::AStrategyPlayerController()
 	bEnableClickEvents = true;
 	bIsLMBPressed = false;
 	bIsRMBPressed = false;
-	bIsSelectBoxInit = false;
-	bIsSelectBoxToWorldInit = false;
 
 	MousePosition = { 0.f, 0.f };
 	ViewportSize = { 0, 0 };
@@ -29,6 +28,13 @@ void AStrategyPlayerController::BeginPlay()
 
 	bShowMouseCursor = true;
 	CameraPawn = Cast<ACameraPawn>(GetPawn());
+
+	// TODO Consider replacing with GetGameMode()
+	AStrategyAfternoonGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AStrategyAfternoonGameModeBase>();
+	if (GameMode->UnitManager)
+	{
+		UnitManager = GameMode->UnitManager;
+	}
 
 	// TODO Works only in editor window not in standalone game
 	GetViewportSize(ViewportSize.X, ViewportSize.Y);
@@ -45,7 +51,14 @@ void AStrategyPlayerController::Tick(float DeltaTime)
 		if (bIsLMBPressed)
 		{
 			DefineSelectionBox();
-			DefineSelectionBoxToWorld();
+			if (SelectionBox.isDragging())
+			{
+				SelectMultipleUnits();
+			}
+			else
+			{
+				SelectSingleUnit();
+			}
 			// TODO Disselect previous units
 			// TODO Select new units 
 		}
@@ -120,10 +133,10 @@ void AStrategyPlayerController::MoveCamera() const
 
 void AStrategyPlayerController::DefineSelectionBox()
 {
-	if (!bIsSelectBoxInit)
+	if (!SelectionBox.bIsInitialized)
 	{
 		SelectionBox.PointB = SelectionBox.PointA = MousePosition;
-		bIsSelectBoxInit = true;
+		SelectionBox.bIsInitialized = true;
 	}
 		SelectionBox.PointB = MousePosition;
 }
@@ -133,19 +146,33 @@ void AStrategyPlayerController::SelectionBoxReset()
 	if (!bIsLMBPressed)
 	{
 		SelectionBox.Reset();
-		bIsSelectBoxInit = false;
-		bIsSelectBoxToWorldInit = false;
 	}
 }
 
-void AStrategyPlayerController::DefineSelectionBoxToWorld()
+void AStrategyPlayerController::SelectMultipleUnits()
+{
+	for (auto Unit : UnitManager->BattleUnits)
+	{
+		FVector2D ScreenLocation;
+		if (ProjectWorldLocationToScreen(Unit->GetActorLocation(), ScreenLocation))
+		{
+			if (SelectionBox.Absolute().IsInside(ScreenLocation))
+			{
+				Unit->bIsActive = true;
+			}
+		}
+	}
+}
+
+void AStrategyPlayerController::SelectSingleUnit()
 {
 	FHitResult HitResult;
-	if (!bIsSelectBoxToWorldInit)
+	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, false, HitResult))
 	{
-		GetHitResultAtScreenPosition(SelectionBox.PointA, CurrentClickTraceChannel, false, HitResult);
-		SelectionBoxToWorld.PointB = SelectionBoxToWorld.PointA = { HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y };
+		ABattleUnitBase* Unit = Cast<ABattleUnitBase>(HitResult.Actor);
+		if (Unit)
+		{
+			Unit->bIsActive = true; 
+		}
 	}
-	GetHitResultAtScreenPosition(SelectionBox.PointB, CurrentClickTraceChannel, false, HitResult);
-	SelectionBoxToWorld.PointB = { HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y };
 }
