@@ -48,9 +48,16 @@ public:
 	// Camera movement interface 
 	void MoveCamera() const;
 
-	void SelectMultipleUnits();
+	// Uses the battle units' screen space location to determine if they are within the selection box
+	void SelectMultipleUnits() const;
 
-	void SelectSingleUnit();
+	// Raycasts and checks result under mouse cursor, if a unit was hit it is set to selected
+	void SelectSingleUnit() const;
+
+	void UnselectUnits() const; 
+
+	// Sends the selected pawn to a new location
+	void MoveSelectedUnitsTo(FVector const& NewDestination) const;
 
 	// Contains the coordinates of the mouse drag selection box
 	UPROPERTY()

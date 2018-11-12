@@ -17,14 +17,20 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Move pawn to destination
+	void MoveTo(FVector const& Destination) const;
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	// Checks if the unit is currently selected by the player controller
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsActive;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsHighlighted;
+
+	UPROPERTY()
+	class AUnitController* UnitController;
 };

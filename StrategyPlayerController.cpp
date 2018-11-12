@@ -104,6 +104,7 @@ void AStrategyPlayerController::OnRMBPressed()
 void AStrategyPlayerController::OnRMBReleased()
 {
 	bIsRMBPressed = false; 
+	MoveSelectedUnitsTo(NewDispatchDestination);
 	NewDispatchDestination = { 0.f, 0.f, 0.f };
 }
 
@@ -149,22 +150,26 @@ void AStrategyPlayerController::SelectionBoxReset()
 	}
 }
 
-void AStrategyPlayerController::SelectMultipleUnits()
+void AStrategyPlayerController::SelectMultipleUnits() const
 {
 	for (auto Unit : UnitManager->BattleUnits)
 	{
 		FVector2D ScreenLocation;
 		if (ProjectWorldLocationToScreen(Unit->GetActorLocation(), ScreenLocation))
-		{
+		{	
 			if (SelectionBox.Absolute().IsInside(ScreenLocation))
 			{
 				Unit->bIsActive = true;
+			}
+			else
+			{
+				Unit->bIsActive = false; // What if selected unit is off screen? 
 			}
 		}
 	}
 }
 
-void AStrategyPlayerController::SelectSingleUnit()
+void AStrategyPlayerController::SelectSingleUnit() const
 {
 	FHitResult HitResult;
 	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, false, HitResult))
@@ -172,7 +177,27 @@ void AStrategyPlayerController::SelectSingleUnit()
 		ABattleUnitBase* Unit = Cast<ABattleUnitBase>(HitResult.Actor);
 		if (Unit)
 		{
+			UnselectUnits();
 			Unit->bIsActive = true; 
+		}
+	}
+}
+
+void AStrategyPlayerController::UnselectUnits() const
+{
+	for (auto Unit : UnitManager->BattleUnits)
+	{
+		Unit->bIsActive = false;
+	}
+}
+
+void AStrategyPlayerController::MoveSelectedUnitsTo(FVector const& NewDestination) const
+{
+	for (auto Unit : UnitManager->BattleUnits)
+	{
+		if (Unit->bIsActive)
+		{
+			Unit->MoveTo(NewDestination);
 		}
 	}
 }
