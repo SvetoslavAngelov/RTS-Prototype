@@ -29,7 +29,48 @@ void AUnitManager::DestroyUnit(ABattleUnitBase* BattleUnit)
 {
 	if (BattleUnit)
 	{
+		if (SelectedUnits.Find(BattleUnit))
+		{
+			SelectedUnits.Pop(BattleUnit);
+		}
 		BattleUnits.Pop(BattleUnit);
 		BattleUnit->Destroy();
+	}
+}
+
+void AUnitManager::AddToSelectedUnits(class ABattleUnitBase* Unit)
+{
+	Unit->bIsActive = true;
+	SelectedUnits.Add(Unit);
+}
+
+void AUnitManager::ClearSelection()
+{	
+	for (auto Unit : SelectedUnits)
+	{
+		Unit->bIsActive = false;
+	}
+	SelectedUnits.Empty();
+}
+
+TArray<class ABattleUnitBase*> const& AUnitManager::GetBattleUnits() const
+{
+	return BattleUnits; 
+}
+
+TArray<class ABattleUnitBase*> const& AUnitManager::GetSelectedUnits() const
+{
+	return SelectedUnits; 
+}
+
+void AUnitManager::SwapSelection(TArray<class ABattleUnitBase*> & NewSelection)
+{
+	if (NewSelection.Num() != 0)
+	{
+		ClearSelection();
+		for (auto Unit : NewSelection)
+		{
+			AddToSelectedUnits(Unit);
+		}
 	}
 }

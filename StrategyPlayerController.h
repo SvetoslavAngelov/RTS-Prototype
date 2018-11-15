@@ -42,9 +42,6 @@ public:
 	// Defines the dimensions of the selection box in screen space
 	void DefineSelectionBox(); 
 
-	// Sets the selection box dimensions back to defaults (0)
-	void SelectionBoxReset();
-
 	// Camera movement interface 
 	void MoveCamera() const;
 
@@ -53,8 +50,6 @@ public:
 
 	// Raycasts and checks result under mouse cursor, if a unit was hit it is set to selected
 	void SelectSingleUnit() const;
-
-	void UnselectUnits() const; 
 
 	// Sends the selected pawn to a new location
 	void MoveSelectedUnitsTo(FVector const& NewDestination) const;
@@ -69,7 +64,7 @@ private:
 	class ACameraPawn const* CameraPawn; 
 
 	// Unit manager which handles spawning and destroying of battle units
-	class AUnitManager const* UnitManager;
+	class AUnitManager* UnitManager;
 
 	// Current view port size. 
 	// NOTE: This is different from resolution

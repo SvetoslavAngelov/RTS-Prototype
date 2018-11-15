@@ -51,22 +51,7 @@ void AStrategyPlayerController::Tick(float DeltaTime)
 		if (bIsLMBPressed)
 		{
 			DefineSelectionBox();
-			if (SelectionBox.isDragging())
-			{
-				SelectMultipleUnits();
-			}
-			else
-			{
-				SelectSingleUnit();
-			}
-			// TODO Disselect previous units
-			// TODO Select new units 
 		}
-		if (bIsRMBPressed)
-		{
-			// TODO Dispatch units 
-		}
-		SelectionBoxReset();
 	}
 }
 
@@ -89,6 +74,15 @@ void AStrategyPlayerController::OnLMBPressed()
 void AStrategyPlayerController::OnLMBReleased()
 {
 	bIsLMBPressed = false;
+	if (SelectionBox.isDragging())
+	{
+		SelectMultipleUnits();
+	}
+	else if (!SelectionBox.isDragging())
+	{
+		SelectSingleUnit();
+	}
+	SelectionBox.Reset();
 }
 
 void AStrategyPlayerController::OnRMBPressed()
@@ -105,7 +99,6 @@ void AStrategyPlayerController::OnRMBReleased()
 {
 	bIsRMBPressed = false; 
 	MoveSelectedUnitsTo(NewDispatchDestination);
-	NewDispatchDestination = { 0.f, 0.f, 0.f };
 }
 
 
@@ -139,34 +132,25 @@ void AStrategyPlayerController::DefineSelectionBox()
 		SelectionBox.PointB = SelectionBox.PointA = MousePosition;
 		SelectionBox.bIsInitialized = true;
 	}
-		SelectionBox.PointB = MousePosition;
-}
-
-void AStrategyPlayerController::SelectionBoxReset()
-{
-	if (!bIsLMBPressed)
-	{
-		SelectionBox.Reset();
-	}
+	SelectionBox.PointB = MousePosition;
 }
 
 void AStrategyPlayerController::SelectMultipleUnits() const
 {
-	for (auto Unit : UnitManager->BattleUnits)
+	TArray<ABattleUnitBase*> Temp; 
+
+	for (auto Unit : UnitManager->GetBattleUnits())
 	{
 		FVector2D ScreenLocation;
 		if (ProjectWorldLocationToScreen(Unit->GetActorLocation(), ScreenLocation))
 		{	
 			if (SelectionBox.Absolute().IsInside(ScreenLocation))
 			{
-				Unit->bIsActive = true;
+				Temp.Add(Unit);
 			}
-			else
-			{
-				Unit->bIsActive = false; // What if selected unit is off screen? 
-			}
-		}
+		}	
 	}
+	UnitManager->SwapSelection(Temp);
 }
 
 void AStrategyPlayerController::SelectSingleUnit() const
@@ -177,27 +161,16 @@ void AStrategyPlayerController::SelectSingleUnit() const
 		ABattleUnitBase* Unit = Cast<ABattleUnitBase>(HitResult.Actor);
 		if (Unit)
 		{
-			UnselectUnits();
-			Unit->bIsActive = true; 
+			UnitManager->ClearSelection();
+			UnitManager->AddToSelectedUnits(Unit);
 		}
-	}
-}
-
-void AStrategyPlayerController::UnselectUnits() const
-{
-	for (auto Unit : UnitManager->BattleUnits)
-	{
-		Unit->bIsActive = false;
 	}
 }
 
 void AStrategyPlayerController::MoveSelectedUnitsTo(FVector const& NewDestination) const
 {
-	for (auto Unit : UnitManager->BattleUnits)
+	for (auto Unit : UnitManager->GetSelectedUnits())
 	{
-		if (Unit->bIsActive)
-		{
-			Unit->MoveTo(NewDestination);
-		}
+		Unit->MoveTo(NewDestination);
 	}
 }
