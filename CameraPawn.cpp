@@ -9,9 +9,8 @@
 // Sets default values
 ACameraPawn::ACameraPawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	//PrimaryActorTick.bCanEverTick = true;
-	//PrimaryActorTick.bStartWithTickEnabled = true; 
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true; 
 
 	// Set up root component 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
