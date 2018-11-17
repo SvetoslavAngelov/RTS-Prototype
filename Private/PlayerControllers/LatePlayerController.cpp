@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "StrategyPlayerController.h"
-#include "CameraPawn.h"
-#include "Public/UnitManager.h"
-#include "Public/Units/BattleUnitBase.h"
-#include "StrategyAfternoonGameModeBase.h"
+#include "Public/PlayerControllers/LatePlayerController.h"
+#include "Public/Pawns/CameraPawn.h"
+#include "Public/GameplayManagers/UnitManager.h"
+#include "Public/Units/UnitBase.h"
+#include "LateGameModeBase.h"
 #include "Engine/World.h"
 
 
-AStrategyPlayerController::AStrategyPlayerController()
+ALatePlayerController::ALatePlayerController()
 {
 	// Shows mouse cursor and enables click events
 	bEnableClickEvents = true;
@@ -19,10 +19,9 @@ AStrategyPlayerController::AStrategyPlayerController()
 	ViewportSize = { 0, 0 };
 
 	NewDispatchDestination = { 0.f, 0.f, 0.f };
-	
 }
 
-void AStrategyPlayerController::BeginPlay()
+void ALatePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -30,7 +29,7 @@ void AStrategyPlayerController::BeginPlay()
 	CameraPawn = Cast<ACameraPawn>(GetPawn());
 
 	// TODO Consider replacing with GetGameMode()
-	AStrategyAfternoonGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AStrategyAfternoonGameModeBase>();
+	ALateGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ALateGameModeBase>();
 	if (GameMode->UnitManager)
 	{
 		UnitManager = GameMode->UnitManager;
@@ -40,10 +39,10 @@ void AStrategyPlayerController::BeginPlay()
 	GetViewportSize(ViewportSize.X, ViewportSize.Y);
 }
 
-void AStrategyPlayerController::Tick(float DeltaTime)
+void ALatePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	if (GetMousePosition(MousePosition.X, MousePosition.Y))
 	{
 		// TODO Track mouse world position
@@ -51,27 +50,28 @@ void AStrategyPlayerController::Tick(float DeltaTime)
 		if (bIsLMBPressed)
 		{
 			DefineSelectionBox();
+			HighlightMultipleUnits();
 		}
 	}
 }
 
-void AStrategyPlayerController::SetupInputComponent()
+void ALatePlayerController::SetupInputComponent()
 {
-	Super::SetupInputComponent(); 
+	Super::SetupInputComponent();
 
-	InputComponent->BindAction("Select", IE_Pressed, this, &AStrategyPlayerController::OnLMBPressed);
-	InputComponent->BindAction("Select", IE_Released, this, &AStrategyPlayerController::OnLMBReleased);
+	InputComponent->BindAction("Select", IE_Pressed, this, &ALatePlayerController::OnLMBPressed);
+	InputComponent->BindAction("Select", IE_Released, this, &ALatePlayerController::OnLMBReleased);
 
-	InputComponent->BindAction("Dispatch", IE_Pressed, this, &AStrategyPlayerController::OnRMBPressed);
-	InputComponent->BindAction("Dispatch", IE_Released, this, &AStrategyPlayerController::OnRMBReleased);
+	InputComponent->BindAction("Dispatch", IE_Pressed, this, &ALatePlayerController::OnRMBPressed);
+	InputComponent->BindAction("Dispatch", IE_Released, this, &ALatePlayerController::OnRMBReleased);
 }
 
-void AStrategyPlayerController::OnLMBPressed()
+void ALatePlayerController::OnLMBPressed()
 {
 	bIsLMBPressed = true;
 }
 
-void AStrategyPlayerController::OnLMBReleased()
+void ALatePlayerController::OnLMBReleased()
 {
 	bIsLMBPressed = false;
 	if (SelectionBox.isDragging())
@@ -85,24 +85,24 @@ void AStrategyPlayerController::OnLMBReleased()
 	SelectionBox.Reset();
 }
 
-void AStrategyPlayerController::OnRMBPressed()
+void ALatePlayerController::OnRMBPressed()
 {
 	FHitResult HitResult;
 	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, true, HitResult))
 	{
 		NewDispatchDestination = HitResult.ImpactPoint;
 	}
-	bIsRMBPressed = true; 
+	bIsRMBPressed = true;
 }
 
-void AStrategyPlayerController::OnRMBReleased()
+void ALatePlayerController::OnRMBReleased()
 {
-	bIsRMBPressed = false; 
+	bIsRMBPressed = false;
 	MoveSelectedUnitsTo(NewDispatchDestination);
 }
 
 
-void AStrategyPlayerController::MoveCamera() const
+void ALatePlayerController::MoveCamera() const
 {
 	if (CameraPawn)
 	{
@@ -125,7 +125,7 @@ void AStrategyPlayerController::MoveCamera() const
 	}
 }
 
-void AStrategyPlayerController::DefineSelectionBox()
+void ALatePlayerController::DefineSelectionBox()
 {
 	if (!SelectionBox.bIsInitialized)
 	{
@@ -135,30 +135,31 @@ void AStrategyPlayerController::DefineSelectionBox()
 	SelectionBox.PointB = MousePosition;
 }
 
-void AStrategyPlayerController::SelectMultipleUnits() const
+void ALatePlayerController::SelectMultipleUnits() const
 {
-	TArray<ABattleUnitBase*> Temp; 
+	TArray<AUnitBase*> Temp;
 
-	for (auto Unit : UnitManager->GetBattleUnits())
+	for (auto Unit : UnitManager->GetUnits())
 	{
+		Unit->bIsHighlighted = false;
 		FVector2D ScreenLocation;
 		if (ProjectWorldLocationToScreen(Unit->GetActorLocation(), ScreenLocation))
-		{	
+		{
 			if (SelectionBox.Absolute().IsInside(ScreenLocation))
 			{
 				Temp.Add(Unit);
 			}
-		}	
+		}
 	}
 	UnitManager->SwapSelection(Temp);
 }
 
-void AStrategyPlayerController::SelectSingleUnit() const
+void ALatePlayerController::SelectSingleUnit() const
 {
 	FHitResult HitResult;
 	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, false, HitResult))
 	{
-		ABattleUnitBase* Unit = Cast<ABattleUnitBase>(HitResult.Actor);
+		AUnitBase* Unit = Cast<AUnitBase>(HitResult.Actor);
 		if (Unit)
 		{
 			UnitManager->ClearSelection();
@@ -167,10 +168,34 @@ void AStrategyPlayerController::SelectSingleUnit() const
 	}
 }
 
-void AStrategyPlayerController::MoveSelectedUnitsTo(FVector const& NewDestination) const
+void ALatePlayerController::MoveSelectedUnitsTo(FVector const& NewDestination) const
 {
 	for (auto Unit : UnitManager->GetSelectedUnits())
 	{
 		Unit->MoveTo(NewDestination);
 	}
+}
+
+void ALatePlayerController::HighlightMultipleUnits() const
+{
+	for (auto Unit : UnitManager->GetUnits())
+	{
+		FVector2D ScreenLocation;
+		if (ProjectWorldLocationToScreen(Unit->GetActorLocation(), ScreenLocation))
+		{
+			if (SelectionBox.Absolute().IsInside(ScreenLocation))
+			{
+				Unit->bIsHighlighted = true;
+			}
+			else
+			{
+				Unit->bIsHighlighted = false;
+			}
+		}
+	}
+}
+
+void ALatePlayerController::HighlightSingleUnit() const
+{
+
 }

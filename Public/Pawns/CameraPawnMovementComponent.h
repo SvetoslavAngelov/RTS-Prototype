@@ -10,12 +10,12 @@
  * 
  */
 UCLASS()
-class STRATEGYAFTERNOON_API UCameraPawnMovementComponent : public UPawnMovementComponent
+class LATE_API UCameraPawnMovementComponent : public UPawnMovementComponent
 {
 	GENERATED_BODY()
 
-public: 
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override; 
+public:
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, Category = "Camera pan speed")
 	float CameraMoveSpeed = 450.f;

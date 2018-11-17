@@ -4,23 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "BattleUnitBase.generated.h"
+#include "UnitBase.generated.h"
 
 UCLASS()
-class STRATEGYAFTERNOON_API ABattleUnitBase : public ACharacter
+class LATE_API AUnitBase : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ABattleUnitBase();
+	AUnitBase();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	// Move pawn to destination
 	void MoveTo(FVector const& Destination) const;
-	
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

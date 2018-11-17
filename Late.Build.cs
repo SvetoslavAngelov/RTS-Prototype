@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class StrategyAfternoon : ModuleRules
+public class Late : ModuleRules
 {
-	public StrategyAfternoon(ReadOnlyTargetRules Target) : base(Target)
+	public Late(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	

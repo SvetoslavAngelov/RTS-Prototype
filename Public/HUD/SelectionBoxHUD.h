@@ -4,25 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "SelectionBoxDisplay.generated.h"
+#include "SelectionBoxHUD.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STRATEGYAFTERNOON_API ASelectionBoxDisplay : public AHUD
+class LATE_API ASelectionBoxHUD : public AHUD
 {
 	GENERATED_BODY()
 
-public: 
+public:
 	// Default constructor
-	ASelectionBoxDisplay();
+	ASelectionBoxHUD();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	// Called every frame to display the selection box to screen
-	virtual void DrawHUD() override; 
+	virtual void DrawHUD() override;
 
 	// Draws each indivual line of the selection box
 	void DrawSelectionBox();
@@ -30,13 +30,13 @@ public:
 	// Fills the selection box with a specified colour 
 	void FillSelectionBox();
 
-private: 
+private:
 	// Pointer to the selection box as defined in StrategyPlayerController.h
-	struct FSelectionBox const* SelectionBox; 
+	struct FSelectionBox const* SelectionBox;
 
 	// Colour of the selection box outline
 	UPROPERTY()
-	FColor OutlineColour; 
+	FColor OutlineColour;
 
 	// Selection box fill colour
 	UPROPERTY()
@@ -44,5 +44,5 @@ private:
 
 	// Thickness of the selection box in pixels
 	UPROPERTY()
-	float SelectionBoxThickness; 
+	float SelectionBoxThickness;
 };

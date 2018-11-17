@@ -4,43 +4,43 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "SelectionBox.h"
-#include "StrategyPlayerController.generated.h"
+#include "Public/Data/SelectionBox.h"
+#include "LatePlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STRATEGYAFTERNOON_API AStrategyPlayerController : public APlayerController
+class LATE_API ALatePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-public: 
+public:
 	// Default constructor
-	AStrategyPlayerController(); 
-	
+	ALatePlayerController();
+
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override; 
+	virtual void BeginPlay() override;
 
 	// Called every frame 
-	virtual void Tick(float DeltaTime) override; 
+	virtual void Tick(float DeltaTime) override;
 
 	// Set up player input 
-	virtual void SetupInputComponent() override; 
+	virtual void SetupInputComponent() override;
 
 	/**
 	* SELECTION INTERFACE
 	*/
 	// Sets the LMB flag
-	void OnLMBPressed(); 
+	void OnLMBPressed();
 	void OnLMBReleased();
 
 	// Sets the RMB flag and updates the new dispatch destination
-	void OnRMBPressed(); 
+	void OnRMBPressed();
 	void OnRMBReleased();
 
 	// Defines the dimensions of the selection box in screen space
-	void DefineSelectionBox(); 
+	void DefineSelectionBox();
 
 	// Camera movement interface 
 	void MoveCamera() const;
@@ -51,6 +51,12 @@ public:
 	// Raycasts and checks result under mouse cursor, if a unit was hit it is set to selected
 	void SelectSingleUnit() const;
 
+	// Checks if the unit is withing the selection box and flags it as highlighted 
+	void HighlightMultipleUnits() const;
+
+	// Checks if a unit is under the mouse cursor and flags it as highlighted 
+	void HighlightSingleUnit() const;
+
 	// Sends the selected pawn to a new location
 	void MoveSelectedUnitsTo(FVector const& NewDestination) const;
 
@@ -58,10 +64,10 @@ public:
 	UPROPERTY()
 	FSelectionBox SelectionBox;
 
-private: 
+private:
 	// Pointer to the camera pawn 
 	UPROPERTY()
-	class ACameraPawn const* CameraPawn; 
+	class ACameraPawn const* CameraPawn;
 
 	// Unit manager which handles spawning and destroying of battle units
 	class AUnitManager* UnitManager;
@@ -69,7 +75,7 @@ private:
 	// Current view port size. 
 	// NOTE: This is different from resolution
 	UPROPERTY()
-	FIntPoint ViewportSize; 
+	FIntPoint ViewportSize;
 
 	// Holds the current mouse position
 	UPROPERTY()
@@ -87,4 +93,3 @@ private:
 	UPROPERTY()
 	FVector NewDispatchDestination;
 };
-

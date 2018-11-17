@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CameraPawnMovementComponent.h"
+#include "Public/Pawns/CameraPawnMovementComponent.h"
 
 void UCameraPawnMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {

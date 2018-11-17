@@ -6,10 +6,11 @@
 #include "SelectionBox.generated.h"
 
 /**
- * 
+ *
  */
 USTRUCT(BlueprintType)
-struct FSelectionBox {
+struct FSelectionBox 
+{
 	GENERATED_USTRUCT_BODY()
 
 	// Default constructor
@@ -26,11 +27,11 @@ struct FSelectionBox {
 
 	bool isDragging() const;
 
-	FBox2D Absolute() const; 
+	FBox2D Absolute() const;
 
 	// Data members
 	UPROPERTY()
-	FVector2D PointA; 
+	FVector2D PointA;
 
 	UPROPERTY()
 	FVector2D PointB;

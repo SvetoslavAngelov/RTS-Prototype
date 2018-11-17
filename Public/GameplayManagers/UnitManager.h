@@ -4,15 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SelectionBox.h"
 #include "UnitManager.generated.h"
 
 UCLASS()
-class STRATEGYAFTERNOON_API AUnitManager : public AActor
+class LATE_API AUnitManager : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties.
 	AUnitManager();
 
@@ -20,30 +19,30 @@ public:
 	virtual void BeginPlay() override;
 
 	// Spawn new battle unit on the battlefield at the selected spawn location.
-	void SpawnUnit(TSubclassOf<class ABattleUnitBase> UnitType, FVector const& SpawnLocation);
+	void SpawnUnit(TSubclassOf<class AUnitBase> UnitType, FVector const& SpawnLocation);
 
 	// Destroys a battle unit and removes it from the array of active units.
-	void DestroyUnit(class ABattleUnitBase* BattleUnit);
+	void DestroyUnit(class AUnitBase* BattleUnit);
 
 	// Adds to the array of selected units
-	void AddToSelectedUnits(class ABattleUnitBase* Unit);
+	void AddToSelectedUnits(class AUnitBase* Unit);
 
 	// Clears the array of selected units.
 	void ClearSelection();
 
-	void SwapSelection(TArray<class ABattleUnitBase*> & NewSelection); 
+	void SwapSelection(TArray<class AUnitBase*> & NewSelection);
 
-	TArray<class ABattleUnitBase*> const& GetBattleUnits() const;
+	TArray<class AUnitBase*> const& GetUnits() const;
 
-	TArray<class ABattleUnitBase*> const& GetSelectedUnits() const;
+	TArray<class AUnitBase*> const& GetSelectedUnits() const;
 
 private:
 	// Array which holds a reference to all spawned units in the level. 
 	UPROPERTY()
-	TArray<class ABattleUnitBase*> BattleUnits; 
+	TArray<class AUnitBase*> Units;
 
 	// Array which holds only the selected units. This array should not be used to modify object state.
 	UPROPERTY()
-	TArray<class ABattleUnitBase*> SelectedUnits; 
+	TArray<class AUnitBase*> SelectedUnits;
 
 };

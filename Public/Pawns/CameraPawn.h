@@ -7,7 +7,7 @@
 #include "CameraPawn.generated.h"
 
 UCLASS()
-class STRATEGYAFTERNOON_API ACameraPawn : public APawn
+class LATE_API ACameraPawn : public APawn
 {
 	GENERATED_BODY()
 
@@ -21,7 +21,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual class UPawnMovementComponent* GetMovementComponent() const override; 
+	virtual class UPawnMovementComponent* GetMovementComponent() const override;
 
 	// Camera movement interface
 	void MoveLeft() const;
@@ -33,14 +33,14 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UCameraPawnMovementComponent* MovementComponent;
 
-private: 
+private:
 	// Pawn root
 	UPROPERTY(VisibleAnywhere)
-	class USphereComponent* SphereComponent; 
+	class USphereComponent* SphereComponent;
 
 	// Spring arm component
 	UPROPERTY(VisibleAnywhere)
-	class USpringArmComponent* SpringArm; 
+	class USpringArmComponent* SpringArm;
 
 	// Camera actor 
 	UPROPERTY(VisibleAnywhere)

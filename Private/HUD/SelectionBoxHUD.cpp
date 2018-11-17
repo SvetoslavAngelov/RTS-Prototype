@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SelectionBoxDisplay.h"
-#include "StrategyPlayerController.h"
+#include "Public/HUD/SelectionBoxHUD.h"
+#include "Public/PlayerControllers/LatePlayerController.h"
 
-ASelectionBoxDisplay::ASelectionBoxDisplay()
+ASelectionBoxHUD::ASelectionBoxHUD()
 {
 	// Default colour of the selection box set to green
 	OutlineColour = FColor::Green;
@@ -17,19 +17,19 @@ ASelectionBoxDisplay::ASelectionBoxDisplay()
 	SelectionBox = nullptr;
 }
 
-void ASelectionBoxDisplay::BeginPlay()
+void ASelectionBoxHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// Find active player controller and assign a pointer to its selection box
-	AStrategyPlayerController* PlayerController = Cast<AStrategyPlayerController>(GetOwningPlayerController());
+	ALatePlayerController* PlayerController = Cast<ALatePlayerController>(GetOwningPlayerController());
 	if (PlayerController)
 	{
 		SelectionBox = &PlayerController->SelectionBox;
 	}
 }
 
-void ASelectionBoxDisplay::DrawHUD()
+void ASelectionBoxHUD::DrawHUD()
 {
 	Super::DrawHUD();
 
@@ -38,7 +38,7 @@ void ASelectionBoxDisplay::DrawHUD()
 	FillSelectionBox();
 }
 
-void ASelectionBoxDisplay::DrawSelectionBox()
+void ASelectionBoxHUD::DrawSelectionBox()
 {
 	if (SelectionBox)
 	{
@@ -56,15 +56,15 @@ void ASelectionBoxDisplay::DrawSelectionBox()
 	}
 }
 
-void ASelectionBoxDisplay::FillSelectionBox()
+void ASelectionBoxHUD::FillSelectionBox()
 {
-	if(SelectionBox)
+	if (SelectionBox)
 	{
 		// Fill a rectangle with a set colour at given screen coordinates
-		DrawRect(	FillColour, 
-					SelectionBox->PointA.X, 
-					SelectionBox->PointA.Y, 
-					SelectionBox->PointB.X - SelectionBox->PointA.X, 
-					SelectionBox->PointB.Y - SelectionBox->PointA.Y);
+		DrawRect(FillColour,
+			SelectionBox->PointA.X,
+			SelectionBox->PointA.Y,
+			SelectionBox->PointB.X - SelectionBox->PointA.X,
+			SelectionBox->PointB.Y - SelectionBox->PointA.Y);
 	}
 }

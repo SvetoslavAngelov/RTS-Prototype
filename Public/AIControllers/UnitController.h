@@ -10,10 +10,8 @@
  * 
  */
 UCLASS()
-class STRATEGYAFTERNOON_API AUnitController : public AAIController
+class LATE_API AUnitController : public AAIController
 {
 	GENERATED_BODY()
-
-public: 
 	
 };
