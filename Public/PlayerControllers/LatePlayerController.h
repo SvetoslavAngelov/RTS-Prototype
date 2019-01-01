@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Public/Data/SelectionBox.h"
+#include "Runtime/AIModule/Classes/AITypes.h"
 #include "LatePlayerController.generated.h"
 
 /**
@@ -43,7 +44,7 @@ public:
 	void DefineSelectionBox();
 
 	// Camera movement interface 
-	void MoveCamera() const;
+	void UpdateCamera() const;
 
 	// Uses the battle units' screen space location to determine if they are within the selection box
 	void SelectMultipleUnits() const;
@@ -58,7 +59,11 @@ public:
 	void HighlightSingleUnit() const;
 
 	// Sends the selected pawn to a new location
-	void MoveSelectedUnitsTo(FVector const& NewDestination) const;
+	void MoveSelectedUnits() const;
+
+	void InitializeViewport(); 
+
+	void InitializeActiveViewport();
 
 	// Contains the coordinates of the mouse drag selection box
 	UPROPERTY()
@@ -67,7 +72,7 @@ public:
 private:
 	// Pointer to the camera pawn 
 	UPROPERTY()
-	class ACameraPawn const* CameraPawn;
+	class ACameraPawn* CameraPawn;
 
 	// Unit manager which handles spawning and destroying of battle units
 	class AUnitManager* UnitManager;
@@ -75,7 +80,7 @@ private:
 	// Current view port size. 
 	// NOTE: This is different from resolution
 	UPROPERTY()
-	FIntPoint ViewportSize;
+	FVector2D ViewportSize;
 
 	// Holds the current mouse position
 	UPROPERTY()
@@ -89,7 +94,7 @@ private:
 	UPROPERTY()
 	bool bIsRMBPressed;
 
-	// New location for the battle units to move to
+	// New move destination for the unit 
 	UPROPERTY()
-	FVector NewDispatchDestination;
+	FAIMoveRequest Destination; 
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Runtime/AIModule/Classes/AITypes.h"
 #include "UnitBase.generated.h"
 
 UCLASS()
@@ -18,11 +19,11 @@ public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Move pawn to destination
-	void MoveTo(FVector const& Destination) const;
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Move pawn to destination
+	virtual void MoveToDestination(FAIMoveRequest const& Destination) const;
 
 	// Checks if the unit is currently selected by the player controller
 	UPROPERTY(BlueprintReadOnly)
@@ -33,4 +34,13 @@ public:
 
 	UPROPERTY()
 	class AUnitController* UnitController;
+
+	/*  ANIMATION INTERFACE  */
+	// Checks if unit is spawned on the map 
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsSpawned; 
+
+	// Checks if the unit is moving
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsRunning; 
 };

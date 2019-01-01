@@ -2,19 +2,24 @@
 
 #include "Public/Pawns/CameraPawnMovementComponent.h"
 
+UCameraPawnMovementComponent::UCameraPawnMovementComponent()
+{
+	CameraScrollSpeed = 0.f; 
+}
+
 void UCameraPawnMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// Make sure that everything is still valid, and that we are allowed to move.
-	if (PawnOwner || UpdatedComponent || !ShouldSkipUpdate(DeltaTime))
+	if (UpdatedComponent)
 	{
-		// Get (and then clear) the movement vector that we set in ACollidingPawn::Tick
-		FVector DesiredMovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.0f) * DeltaTime * CameraMoveSpeed;
-		if (!DesiredMovementThisFrame.IsNearlyZero())
-		{
-			FHitResult Hit;
-			SafeMoveUpdatedComponent(DesiredMovementThisFrame, UpdatedComponent->GetComponentRotation(), true, Hit);
-		}
+		FVector MovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.f) * DeltaTime * CameraScrollSpeed;
+		FHitResult HitResult; 
+		SafeMoveUpdatedComponent(MovementThisFrame, UpdatedComponent->GetComponentRotation(), true, HitResult);
 	}
+}
+
+void UCameraPawnMovementComponent::SetCameraScrollSpeed(float Speed)
+{
+	CameraScrollSpeed = Speed;
 }

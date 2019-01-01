@@ -36,6 +36,9 @@ public:
 
 	TArray<class AUnitBase*> const& GetSelectedUnits() const;
 
+	UPROPERTY()
+	class AUnitBase* HighlightedUnit;
+
 private:
 	// Array which holds a reference to all spawned units in the level. 
 	UPROPERTY()

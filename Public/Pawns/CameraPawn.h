@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Public/Data/MouseScrollDirection.h"
 #include "CameraPawn.generated.h"
 
 UCLASS()
@@ -24,14 +25,13 @@ public:
 	virtual class UPawnMovementComponent* GetMovementComponent() const override;
 
 	// Camera movement interface
-	void MoveLeft() const;
-	void MoveRight() const;
-	void MoveForward() const;
-	void MoveBackward() const;
+	void UpdateCameraPosition() const;
 
-	// Movement component
-	UPROPERTY(VisibleAnywhere)
-	class UCameraPawnMovementComponent* MovementComponent;
+	EMouseScrollDirection GetMouseScrollDirection() const; 
+
+	EMouseScrollDirection SetMouseScrollDirection(int32 const MousePositionX, int32 const MousePositionY);
+
+	void InitializeActiveViewport(FVector2D const& ViewportSize, int32 const MouseCursorSize);
 
 private:
 	// Pawn root
@@ -45,4 +45,20 @@ private:
 	// Camera actor 
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* Camera;
+
+	// Movement component
+	UPROPERTY(VisibleAnywhere)
+	class UCameraPawnMovementComponent* MovementComponent;
+
+	// Camera scroll speed 
+	UPROPERTY()
+	float CameraScrollSpeed;
+
+	// Enum mouse screen position
+	UPROPERTY()
+	EMouseScrollDirection MouseScrollDirection; 
+	
+	// Active viewport 
+	UPROPERTY()
+	FVector2D ActiveViewportSize; 
 };

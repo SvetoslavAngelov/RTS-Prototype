@@ -3,6 +3,7 @@
 #include "Public/Units/UnitBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Public/AIControllers/UnitController.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 
 
@@ -26,6 +27,9 @@ AUnitBase::AUnitBase()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+	bIsRunning = false; 
+	bIsSpawned = false; 
+
 	AutoPossessAI = EAutoPossessAI::Spawned;
 }
 
@@ -36,7 +40,7 @@ void AUnitBase::BeginPlay()
 	UnitController = Cast<AUnitController>(GetController());
 	if (UnitController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AI controller Active %s"), *UnitController->GetName());
+		bIsSpawned = true;
 	}
 }
 
@@ -44,13 +48,20 @@ void AUnitBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
-
-void AUnitBase::MoveTo(FVector const& Destination) const
-{
-	if (UnitController)
+	if (GetVelocity().X != 0)
 	{
-		UnitController->MoveToLocation(Destination, 0.f, true, true, false, false);
+		bIsRunning = true; 
+	}
+	else
+	{
+		bIsRunning = false;
 	}
 }
 
+void AUnitBase::MoveToDestination(FAIMoveRequest const& Destination) const
+{
+	if (UnitController)
+	{
+		UnitController->MoveTo(Destination);
+	}
+}

@@ -6,6 +6,7 @@
 #include "Public/Units/UnitBase.h"
 #include "LateGameModeBase.h"
 #include "Engine/World.h"
+#include "Runtime/Engine/Classes/Engine/Engine.h"
 
 
 ALatePlayerController::ALatePlayerController()
@@ -16,27 +17,36 @@ ALatePlayerController::ALatePlayerController()
 	bIsRMBPressed = false;
 
 	MousePosition = { 0.f, 0.f };
-	ViewportSize = { 0, 0 };
+	ViewportSize = { 0.f, 0.f };
 
-	NewDispatchDestination = { 0.f, 0.f, 0.f };
+	// Set default settings for AI move request 
+	Destination = FAIMoveRequest(); 
+	Destination.SetUsePathfinding(true);
+	Destination.SetAllowPartialPath(true);
+	Destination.SetProjectGoalLocation(true);
+	Destination.SetReachTestIncludesAgentRadius(false);
+	Destination.SetReachTestIncludesGoalRadius(false);
+	Destination.SetCanStrafe(false);
+	Destination.SetAcceptanceRadius(1.f);
 }
 
 void ALatePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
 	bShowMouseCursor = true;
-	CameraPawn = Cast<ACameraPawn>(GetPawn());
 
-	// TODO Consider replacing with GetGameMode()
+	CameraPawn = Cast<ACameraPawn>(GetPawn());
+	if (CameraPawn)
+	{
+		InitializeViewport(); 
+		InitializeActiveViewport();
+	}
+
 	ALateGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ALateGameModeBase>();
 	if (GameMode->UnitManager)
 	{
 		UnitManager = GameMode->UnitManager;
 	}
-
-	// TODO Works only in editor window not in standalone game
-	GetViewportSize(ViewportSize.X, ViewportSize.Y);
 }
 
 void ALatePlayerController::Tick(float DeltaTime)
@@ -45,8 +55,8 @@ void ALatePlayerController::Tick(float DeltaTime)
 
 	if (GetMousePosition(MousePosition.X, MousePosition.Y))
 	{
-		// TODO Track mouse world position
-		MoveCamera();
+		UpdateCamera();
+		HighlightSingleUnit();
 		if (bIsLMBPressed)
 		{
 			DefineSelectionBox();
@@ -87,41 +97,35 @@ void ALatePlayerController::OnLMBReleased()
 
 void ALatePlayerController::OnRMBPressed()
 {
-	FHitResult HitResult;
+	FHitResult HitResult; 
 	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, true, HitResult))
 	{
-		NewDispatchDestination = HitResult.ImpactPoint;
+		AUnitBase* Unit = Cast<AUnitBase>(HitResult.GetActor());
+		if (Unit && Destination.UpdateGoalLocation(Unit->GetActorLocation()))
+		{
+			Destination.SetGoalActor(Unit);
+		}
+		else if (Destination.UpdateGoalLocation(HitResult.ImpactPoint))
+		{
+			Destination.SetGoalLocation(HitResult.ImpactPoint);
+		}
 	}
+	MoveSelectedUnits();
 	bIsRMBPressed = true;
 }
 
 void ALatePlayerController::OnRMBReleased()
 {
 	bIsRMBPressed = false;
-	MoveSelectedUnitsTo(NewDispatchDestination);
 }
 
 
-void ALatePlayerController::MoveCamera() const
+void ALatePlayerController::UpdateCamera() const
 {
 	if (CameraPawn)
 	{
-		if (FMath::TruncToInt(MousePosition.X) == 0)
-		{
-			CameraPawn->MoveLeft();
-		}
-		if (FMath::TruncToInt(MousePosition.X) == ViewportSize.X - 1) // TODO The tip of the mouse pointer takes one pixel, if 0 it won't register the screen border. 
-		{
-			CameraPawn->MoveRight();
-		}
-		if (FMath::TruncToInt(MousePosition.Y) == 0)
-		{
-			CameraPawn->MoveForward();
-		}
-		if (FMath::TruncToInt(MousePosition.Y) == ViewportSize.Y - 1) // TODO The tip of the mouse pointer takes one pixel, if 0 it won't register the screen border. 
-		{
-			CameraPawn->MoveBackward();
-		}
+		CameraPawn->SetMouseScrollDirection(FMath::TruncToInt(MousePosition.X), FMath::TruncToInt(MousePosition.Y));
+		CameraPawn->UpdateCameraPosition();
 	}
 }
 
@@ -159,20 +163,12 @@ void ALatePlayerController::SelectSingleUnit() const
 	FHitResult HitResult;
 	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, false, HitResult))
 	{
-		AUnitBase* Unit = Cast<AUnitBase>(HitResult.Actor);
+		AUnitBase* Unit = Cast<AUnitBase>(HitResult.GetActor());
 		if (Unit)
 		{
 			UnitManager->ClearSelection();
 			UnitManager->AddToSelectedUnits(Unit);
 		}
-	}
-}
-
-void ALatePlayerController::MoveSelectedUnitsTo(FVector const& NewDestination) const
-{
-	for (auto Unit : UnitManager->GetSelectedUnits())
-	{
-		Unit->MoveTo(NewDestination);
 	}
 }
 
@@ -197,5 +193,41 @@ void ALatePlayerController::HighlightMultipleUnits() const
 
 void ALatePlayerController::HighlightSingleUnit() const
 {
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectType; 
+	FHitResult HitResult; 
+	if (GetHitResultUnderCursorForObjects(ObjectType, false, HitResult))
+	{
+		AUnitBase* Unit = Cast<AUnitBase>(HitResult.GetActor());
+		if (Unit)
+		{
+			Unit->bIsHighlighted = true;
+			UnitManager->HighlightedUnit = Unit; 
+		}
+		else if (UnitManager->HighlightedUnit)
+		{
+			UnitManager->HighlightedUnit->bIsHighlighted = false;
+			UnitManager->HighlightedUnit = nullptr; 
+		}
+	}
+}
 
+void ALatePlayerController::MoveSelectedUnits() const
+{
+	for (auto Unit : UnitManager->GetSelectedUnits())
+	{
+		Unit->MoveToDestination(Destination);
+	}
+}
+
+void ALatePlayerController::InitializeViewport()
+{
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+}
+
+void ALatePlayerController::InitializeActiveViewport()
+{
+	CameraPawn->InitializeActiveViewport(ViewportSize, 0);
 }

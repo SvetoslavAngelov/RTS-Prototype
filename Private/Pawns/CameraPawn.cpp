@@ -29,6 +29,16 @@ ACameraPawn::ACameraPawn()
 	// Set up movement component
 	MovementComponent = CreateDefaultSubobject<UCameraPawnMovementComponent>(TEXT("MovementComponent"));
 	MovementComponent->UpdatedComponent = RootComponent;
+
+	// Set camera scroll speed
+	CameraScrollSpeed = 450.f;
+	MovementComponent->SetCameraScrollSpeed(CameraScrollSpeed);
+
+	// Set mouse scroll direction at start of game
+	MouseScrollDirection = EMouseScrollDirection::Centre;
+
+	// Set default active viewport size 
+	ActiveViewportSize = { 0.f,0.f };
 }
 
 void ACameraPawn::BeginPlay()
@@ -48,35 +58,51 @@ UPawnMovementComponent* ACameraPawn::GetMovementComponent() const
 	return MovementComponent;
 }
 
-void ACameraPawn::MoveLeft() const
+void ACameraPawn::UpdateCameraPosition() const
 {
-	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
+	if (MovementComponent)
 	{
-		MovementComponent->AddInputVector(GetActorRightVector() * -1.f);
+		switch (MouseScrollDirection)
+		{
+			case(EMouseScrollDirection::Left)
+				: MovementComponent->AddInputVector(GetActorRightVector() * -1.f);
+				break; 
+			case(EMouseScrollDirection::Right)
+				: MovementComponent->AddInputVector(GetActorRightVector());
+				break;
+			case(EMouseScrollDirection::Top)
+				: MovementComponent->AddInputVector(GetActorForwardVector());
+				break;
+			case(EMouseScrollDirection::Bottom)
+				: MovementComponent->AddInputVector(GetActorForwardVector() * -1.f);
+				break;
+			default
+				: break;
+		}
 	}
 }
 
-
-void ACameraPawn::MoveRight() const
+EMouseScrollDirection ACameraPawn::GetMouseScrollDirection() const
 {
-	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
-	{
-		MovementComponent->AddInputVector(GetActorRightVector());
-	}
+	return MouseScrollDirection; 
 }
 
-void ACameraPawn::MoveForward() const
+EMouseScrollDirection ACameraPawn::SetMouseScrollDirection(int32 MousePositionX, int32 MousePositionY)
 {
-	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
-	{
-		MovementComponent->AddInputVector(GetActorForwardVector());
-	}
+	if (MousePositionX == 0)
+		return MouseScrollDirection = EMouseScrollDirection::Left;
+	else if (MousePositionX == ActiveViewportSize.X)
+		return MouseScrollDirection = EMouseScrollDirection::Right;
+	else if (MousePositionY == 0)
+		return MouseScrollDirection = EMouseScrollDirection::Top;
+	else if (MousePositionY == ActiveViewportSize.Y)
+		return MouseScrollDirection = EMouseScrollDirection::Bottom; 
+
+	return MouseScrollDirection = EMouseScrollDirection::Centre; 
 }
 
-void ACameraPawn::MoveBackward() const
+void ACameraPawn::InitializeActiveViewport(FVector2D const& ViewportSize, int32 const MouseCursorSize)
 {
-	if (MovementComponent && (MovementComponent->UpdatedComponent == RootComponent))
-	{
-		MovementComponent->AddInputVector(GetActorForwardVector() * -1.f);
-	}
+	ActiveViewportSize.X = FMath::TruncToInt(ViewportSize.X) - MouseCursorSize; 
+	ActiveViewportSize.Y = FMath::TruncToInt(ViewportSize.Y) - MouseCursorSize; 
 }

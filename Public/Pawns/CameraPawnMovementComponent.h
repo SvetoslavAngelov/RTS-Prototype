@@ -15,8 +15,13 @@ class LATE_API UCameraPawnMovementComponent : public UPawnMovementComponent
 	GENERATED_BODY()
 
 public:
+	UCameraPawnMovementComponent();
+	
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere, Category = "Camera pan speed")
-	float CameraMoveSpeed = 450.f;
+	void SetCameraScrollSpeed(float Speed);
+
+private:
+	UPROPERTY()
+	float CameraScrollSpeed;
 };

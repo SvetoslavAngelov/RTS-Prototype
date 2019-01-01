@@ -10,6 +10,8 @@ AUnitManager::AUnitManager()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	// No highlighted units at start of game 
+	HighlightedUnit = nullptr;
 }
 
 void AUnitManager::BeginPlay()
