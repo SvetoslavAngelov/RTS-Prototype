@@ -20,7 +20,7 @@ ACameraPawn::ACameraPawn()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->TargetArmLength = 800.f;
-	SpringArm->RelativeRotation = { -60.f, 0.f, 0.f };
+	SpringArm->RelativeRotation = { -50.f, 0.f, 0.f };
 
 	// Set up camera component
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));

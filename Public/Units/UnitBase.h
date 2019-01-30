@@ -25,22 +25,18 @@ public:
 	// Move pawn to destination
 	virtual void MoveToDestination(FAIMoveRequest const& Destination) const;
 
-	// Checks if the unit is currently selected by the player controller
+	// Returns the unit capsule radius to screen size ratio
+	virtual float GetUnitCapsuleSize() const;
+
+	// True if the unit is currently selected by the player
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsActive;
 
+	// True if the unit is currently highlighted by the mouse cursor
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsHighlighted;
 
 	UPROPERTY()
 	class AUnitController* UnitController;
 
-	/*  ANIMATION INTERFACE  */
-	// Checks if unit is spawned on the map 
-	UPROPERTY(BlueprintReadWrite)
-	bool bIsSpawned; 
-
-	// Checks if the unit is moving
-	UPROPERTY(BlueprintReadWrite)
-	bool bIsRunning; 
 };

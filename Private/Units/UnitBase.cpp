@@ -27,9 +27,6 @@ AUnitBase::AUnitBase()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	bIsRunning = false; 
-	bIsSpawned = false; 
-
 	AutoPossessAI = EAutoPossessAI::Spawned;
 }
 
@@ -38,24 +35,16 @@ void AUnitBase::BeginPlay()
 	Super::BeginPlay();
 
 	UnitController = Cast<AUnitController>(GetController());
-	if (UnitController)
-	{
-		bIsSpawned = true;
-	}
 }
 
 void AUnitBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
-	if (GetVelocity().X != 0)
-	{
-		bIsRunning = true; 
-	}
-	else
-	{
-		bIsRunning = false;
-	}
+float AUnitBase::GetUnitCapsuleSize() const
+{
+	return  GetCapsuleComponent()->GetScaledCapsuleRadius();
 }
 
 void AUnitBase::MoveToDestination(FAIMoveRequest const& Destination) const
