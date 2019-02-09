@@ -124,7 +124,7 @@ void ALatePlayerController::UpdateCamera() const
 {
 	if (CameraPawn)
 	{
-		CameraPawn->SetMouseScrollDirection(FMath::TruncToInt(MousePosition.X), FMath::TruncToInt(MousePosition.Y));
+		CameraPawn->SetMouseScrollDirection(MousePosition.X, MousePosition.Y);
 		CameraPawn->UpdateCameraPosition();
 	}
 }
@@ -233,5 +233,5 @@ void ALatePlayerController::InitializeViewport()
 
 void ALatePlayerController::InitializeActiveViewport()
 {
-	CameraPawn->InitializeActiveViewport(ViewportSize, 0);
+	CameraPawn->InitializeActiveViewport(ViewportSize, 0.f);
 }

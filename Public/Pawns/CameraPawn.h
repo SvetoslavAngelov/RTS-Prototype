@@ -29,9 +29,9 @@ public:
 
 	EMouseScrollDirection GetMouseScrollDirection() const; 
 
-	EMouseScrollDirection SetMouseScrollDirection(int32 const MousePositionX, int32 const MousePositionY);
+	EMouseScrollDirection SetMouseScrollDirection(float const MousePositionX, float const MousePositionY);
 
-	void InitializeActiveViewport(FVector2D const& ViewportSize, int32 const MouseCursorSize);
+	void InitializeActiveViewport(FVector2D const& ViewportSize, float const MouseCursorSize);
 
 private:
 	// Pawn root

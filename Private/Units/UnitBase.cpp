@@ -13,6 +13,7 @@ AUnitBase::AUnitBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// TODO For debug only
+	bIsSpawned = false;
 	bIsActive = false;
 	bIsHighlighted = false;
 
@@ -28,6 +29,7 @@ AUnitBase::AUnitBase()
 	bUseControllerRotationRoll = false;
 
 	AutoPossessAI = EAutoPossessAI::Spawned;
+	Index = -1;
 }
 
 void AUnitBase::BeginPlay()
@@ -35,6 +37,10 @@ void AUnitBase::BeginPlay()
 	Super::BeginPlay();
 
 	UnitController = Cast<AUnitController>(GetController());
+	if (UnitController)
+	{
+		bIsSpawned = true;
+	}
 }
 
 void AUnitBase::Tick(float DeltaTime)

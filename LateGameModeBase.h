@@ -20,6 +20,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UnitSpawn")
 	void SpawnUnit(UPARAM() TSubclassOf<class AUnitBase> UnitType, FVector const& SpawnLocation);
 
+	UFUNCTION(BlueprintCallable, Category = "DestroyUnit")
+	void DestroyUnit();
+
 	UPROPERTY(BlueprintReadOnly, Category = "UnitManager")
 	class AUnitManager* UnitManager;
 };

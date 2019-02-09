@@ -30,6 +30,9 @@ public:
 	// Clears the array of selected units.
 	void ClearSelection();
 
+	// Reassigns the unit indices in the array after a removal, starting from a set index in the array
+	void UpdateUnitIndices(int32 const Index);
+
 	void SwapSelection(TArray<class AUnitBase*> & NewSelection);
 
 	TArray<class AUnitBase*> const& GetUnits() const;

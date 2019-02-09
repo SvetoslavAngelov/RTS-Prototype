@@ -23,9 +23,6 @@ public:
 	virtual void MoveToDestination(FAIMoveRequest const& Destination) const override; 
 
 	/*  ANIMATION INTERFACE  */
-	// Checks if unit is spawned on the map 
-	UPROPERTY(BlueprintReadWrite)
-	bool bIsSpawned;
 
 	// Checks if the unit is moving
 	UPROPERTY(BlueprintReadWrite)

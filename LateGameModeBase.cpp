@@ -13,5 +13,12 @@ void ALateGameModeBase::BeginPlay()
 void ALateGameModeBase::SpawnUnit(UPARAM() TSubclassOf<class AUnitBase> UnitType, FVector const& SpawnLocation)
 {
 	if (UnitManager)
+	{
 		UnitManager->SpawnUnit(UnitType, SpawnLocation);
+	}
+}
+
+void ALateGameModeBase::DestroyUnit()
+{
+	UnitManager->DestroyUnit(UnitManager->GetUnits()[0]); // TODO DEBUG!!!
 }

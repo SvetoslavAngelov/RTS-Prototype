@@ -5,17 +5,11 @@
 AAttackUnit::AAttackUnit()
 {
 	bIsRunning = false;
-	bIsSpawned = false;
 }
 
 void AAttackUnit::BeginPlay()
 {
 	AUnitBase::BeginPlay();
-
-	if (UnitController)
-	{
-		bIsSpawned = true;
-	}
 }
 
 void AAttackUnit::Tick(float DeltaTime)

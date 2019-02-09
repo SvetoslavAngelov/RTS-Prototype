@@ -87,13 +87,13 @@ EMouseScrollDirection ACameraPawn::GetMouseScrollDirection() const
 	return MouseScrollDirection; 
 }
 
-EMouseScrollDirection ACameraPawn::SetMouseScrollDirection(int32 MousePositionX, int32 MousePositionY)
+EMouseScrollDirection ACameraPawn::SetMouseScrollDirection(float MousePositionX, float MousePositionY)
 {
-	if (MousePositionX == 0)
+	if (FMath::IsNearlyZero(MousePositionX))
 		return MouseScrollDirection = EMouseScrollDirection::Left;
 	else if (MousePositionX == ActiveViewportSize.X)
 		return MouseScrollDirection = EMouseScrollDirection::Right;
-	else if (MousePositionY == 0)
+	else if (FMath::IsNearlyZero(MousePositionY))
 		return MouseScrollDirection = EMouseScrollDirection::Top;
 	else if (MousePositionY == ActiveViewportSize.Y)
 		return MouseScrollDirection = EMouseScrollDirection::Bottom; 
@@ -101,8 +101,8 @@ EMouseScrollDirection ACameraPawn::SetMouseScrollDirection(int32 MousePositionX,
 	return MouseScrollDirection = EMouseScrollDirection::Centre; 
 }
 
-void ACameraPawn::InitializeActiveViewport(FVector2D const& ViewportSize, int32 const MouseCursorSize)
+void ACameraPawn::InitializeActiveViewport(FVector2D const& ViewportSize, float const MouseCursorSize)
 {
-	ActiveViewportSize.X = FMath::TruncToInt(ViewportSize.X) - MouseCursorSize; 
-	ActiveViewportSize.Y = FMath::TruncToInt(ViewportSize.Y) - MouseCursorSize; 
+	ActiveViewportSize.X = ViewportSize.X - MouseCursorSize; 
+	ActiveViewportSize.Y = ViewportSize.Y - MouseCursorSize; 
 }

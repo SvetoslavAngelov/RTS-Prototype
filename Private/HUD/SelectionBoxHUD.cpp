@@ -33,15 +33,15 @@ void ASelectionBoxHUD::DrawHUD()
 {
 	Super::DrawHUD();
 
-	// TODO increase performance by removing the SelectionBox checks 
-	DrawSelectionBox();
-	FillSelectionBox();
+	if (SelectionBox)
+	{
+		DrawSelectionBox();
+		FillSelectionBox();
+	}
 }
 
 void ASelectionBoxHUD::DrawSelectionBox()
 {
-	if (SelectionBox)
-	{
 		// Draw side A
 		DrawLine(SelectionBox->PointA.X, SelectionBox->PointA.Y, SelectionBox->PointB.X, SelectionBox->PointA.Y, OutlineColour, SelectionBoxThickness);
 
@@ -53,18 +53,14 @@ void ASelectionBoxHUD::DrawSelectionBox()
 
 		// Draw side D
 		DrawLine(SelectionBox->PointA.X, SelectionBox->PointB.Y, SelectionBox->PointA.X, SelectionBox->PointA.Y, OutlineColour, SelectionBoxThickness);
-	}
 }
 
 void ASelectionBoxHUD::FillSelectionBox()
 {
-	if (SelectionBox)
-	{
 		// Fill a rectangle with a set colour at given screen coordinates
 		DrawRect(FillColour,
 			SelectionBox->PointA.X,
 			SelectionBox->PointA.Y,
 			SelectionBox->PointB.X - SelectionBox->PointA.X,
 			SelectionBox->PointB.Y - SelectionBox->PointA.Y);
-	}
 }

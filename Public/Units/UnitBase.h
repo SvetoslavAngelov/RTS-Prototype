@@ -28,6 +28,10 @@ public:
 	// Returns the unit capsule radius to screen size ratio
 	virtual float GetUnitCapsuleSize() const;
 
+	// Checks if unit is spawned on the map 
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsSpawned;
+
 	// True if the unit is currently selected by the player
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsActive;
@@ -38,5 +42,9 @@ public:
 
 	UPROPERTY()
 	class AUnitController* UnitController;
+
+	// The position of the unit in the UnitManager's unit array
+	UPROPERTY()
+	int32 Index; 
 
 };
