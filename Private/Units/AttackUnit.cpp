@@ -26,7 +26,7 @@ void AAttackUnit::Tick(float DeltaTime)
 	}
 }
 
-void AAttackUnit::MoveToDestination(FAIMoveRequest const& Destination) const
+void AAttackUnit::MoveToDestination(FAIMoveRequest const& Destination)
 {
 	AUnitBase::MoveToDestination(Destination);
 }

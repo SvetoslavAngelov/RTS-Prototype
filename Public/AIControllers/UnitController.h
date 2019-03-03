@@ -13,5 +13,5 @@ UCLASS()
 class LATE_API AUnitController : public AAIController
 {
 	GENERATED_BODY()
-	
+
 };

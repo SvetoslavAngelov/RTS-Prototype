@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Units/UnitBase.h"
-#include "Runtime/AIModule/Classes/AITypes.h"
 #include "AttackUnit.generated.h"
 
 /**
@@ -20,7 +19,9 @@ public:
 	AAttackUnit(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
-	virtual void MoveToDestination(FAIMoveRequest const& Destination) const override; 
+
+	// Calls the unit AI controller to move it to the given destination
+	virtual void MoveToDestination(FAIMoveRequest const& Destination) override;
 
 	/*  ANIMATION INTERFACE  */
 

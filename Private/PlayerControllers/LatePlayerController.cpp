@@ -219,6 +219,7 @@ void ALatePlayerController::MoveSelectedUnits() const
 {
 	for (auto Unit : UnitManager->GetSelectedUnits())
 	{
+		// Calls the AI controller of each unit to execute the command
 		Unit->MoveToDestination(Destination);
 	}
 }

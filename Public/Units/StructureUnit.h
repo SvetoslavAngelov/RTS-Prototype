@@ -14,7 +14,10 @@ class LATE_API AStructureUnit : public AUnitBase
 {
 	GENERATED_BODY()
 
-public: 
+public:
 	virtual void BeginPlay() override;
-	virtual void MoveToDestination(FAIMoveRequest const& Destination) const override;
+
+	// Calls the unit AI controller to move it to the given destination
+	virtual void MoveToDestination(FAIMoveRequest const& Destination) override;
+
 };

@@ -7,8 +7,7 @@ void AStructureUnit::BeginPlay()
 	AUnitBase::BeginPlay();
 }
 
-void AStructureUnit::MoveToDestination(FAIMoveRequest const& Destination) const
+void AStructureUnit::MoveToDestination(FAIMoveRequest const& Destination)
 {
-	// Set waypoint
-	UE_LOG(LogTemp, Warning, TEXT("Waypoint set to %s"), *Destination.GetGoalLocation().ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Not moving!"));
 }

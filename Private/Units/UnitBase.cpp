@@ -3,6 +3,7 @@
 #include "Public/Units/UnitBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Public/AIControllers/UnitController.h"
+#include "Public/GameplayManagers/UnitManager.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 
@@ -22,6 +23,7 @@ AUnitBase::AUnitBase()
 	GetCharacterMovement()->RotationRate = { 0.f, 200.f, 0.f };
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+	GetCharacterMovement()->MaxAcceleration = 400.f;
 
 	// Disables controller rotation. This removes conflict between controller and pawn rotation when new direction is set. 
 	bUseControllerRotationPitch = false;
@@ -48,15 +50,24 @@ void AUnitBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-float AUnitBase::GetUnitCapsuleSize() const
-{
-	return  GetCapsuleComponent()->GetScaledCapsuleRadius();
-}
-
-void AUnitBase::MoveToDestination(FAIMoveRequest const& Destination) const
+void AUnitBase::MoveToDestination(FAIMoveRequest const& Destination)
 {
 	if (UnitController)
 	{
 		UnitController->MoveTo(Destination);
 	}
 }
+
+void AUnitBase::BeginAttack(AUnitBase* Unit)
+{
+	// Move to unit locaiton
+	// Notify UnitManager that a unit is being attacked 
+	
+}
+
+float AUnitBase::GetUnitCapsuleSize() const
+{
+	return  GetCapsuleComponent()->GetScaledCapsuleRadius();
+}
+
+
