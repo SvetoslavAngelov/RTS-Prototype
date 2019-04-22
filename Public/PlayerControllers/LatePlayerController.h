@@ -32,6 +32,7 @@ public:
 	/**
 	* SELECTION INTERFACE
 	*/
+
 	// Sets the LMB flag
 	void OnLMBPressed();
 	void OnLMBReleased();
@@ -43,27 +44,41 @@ public:
 	// Defines the dimensions of the selection box in screen space
 	void DefineSelectionBox();
 
-	// Camera movement interface 
-	void UpdateCamera() const;
-
 	// Uses the battle units' screen space location to determine if they are within the selection box
-	void SelectMultipleUnits() const;
+	void SelectMultipleUnits();
 
 	// Raycasts and checks result under mouse cursor, if a unit was hit it is set to selected
-	void SelectSingleUnit() const;
+	void SelectSingleUnit();
 
 	// Checks if the unit is withing the selection box and flags it as highlighted 
-	void HighlightMultipleUnits() const;
+	void HighlightMultipleUnits();
 
 	// Checks if a unit is under the mouse cursor and flags it as highlighted 
-	void HighlightSingleUnit() const;
+	void HighlightSingleUnit();
 
 	// Sends the selected pawn to a new location
 	void MoveSelectedUnits() const;
 
+	/**
+	* CAMERA MOVEMENT INTERFACE
+	*/
+
+	void UpdateCamera() const;
+
 	void InitializeViewport(); 
 
 	void InitializeActiveViewport();
+
+	/**
+	* UNIT MANAGEMENT INTERFACE	
+	*/
+
+	// Spawn new battle unit on the battlefield at the selected spawn location.
+	UFUNCTION(BlueprintCallable)
+	void SpawnUnit(UPARAM() TSubclassOf<class AUnitBase> UnitType, FVector const& Location);
+
+	// DEBUG
+	void Attack();
 
 	// Contains the coordinates of the mouse drag selection box
 	UPROPERTY()
@@ -73,9 +88,6 @@ private:
 	// Pointer to the camera pawn 
 	UPROPERTY()
 	class ACameraPawn* CameraPawn;
-
-	// Unit manager which handles spawning and destroying of battle units
-	class AUnitManager* UnitManager;
 
 	// Current view port size. 
 	// NOTE: This is different from resolution
@@ -97,4 +109,10 @@ private:
 	// New move destination for the unit 
 	UPROPERTY()
 	FAIMoveRequest Destination; 
+
+	UPROPERTY()
+	class AUnitBase* HighlightedUnit;
+
+	UPROPERTY()
+	class AUnitManager* UnitManager;
 };

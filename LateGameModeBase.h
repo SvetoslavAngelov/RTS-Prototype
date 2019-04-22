@@ -16,13 +16,4 @@ class LATE_API ALateGameModeBase : public AGameModeBase
 
 public:
 	virtual void BeginPlay() override;
-
-	UFUNCTION(BlueprintCallable, Category = "UnitSpawn")
-	void SpawnUnit(UPARAM() TSubclassOf<class AUnitBase> UnitType, FVector const& SpawnLocation);
-
-	UFUNCTION(BlueprintCallable, Category = "DestroyUnit")
-	void DestroyUnit();
-
-	UPROPERTY(BlueprintReadOnly, Category = "UnitManager")
-	class AUnitManager* UnitManager;
 };

@@ -7,4 +7,5 @@ FUnitBaseAttributes::FUnitBaseAttributes()
 	Health = 0.f;
 	Armour = 0.f;
 	Damage = 0.f;
+	Range = 0.f;
 }

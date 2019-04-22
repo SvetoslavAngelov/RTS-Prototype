@@ -1,12 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Public/Units/UnitBase.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "Public/Units/UnitMovementComponent.h"
 #include "Public/AIControllers/UnitController.h"
-#include "Public/GameplayManagers/UnitManager.h"
+#include "Public/GameplayManagers/CombatManager.h"
+#include "Components/SceneComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
-
+#include "Components/BoxComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 AUnitBase::AUnitBase()
 {
@@ -18,14 +20,25 @@ AUnitBase::AUnitBase()
 	bIsActive = false;
 	bIsHighlighted = false;
 
-	// Set up character movement component. Movement component is inherited from parent class.
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = { 0.f, 200.f, 0.f };
-	GetCharacterMovement()->bConstrainToPlane = true;
-	GetCharacterMovement()->bSnapToPlaneAtStart = true;
-	GetCharacterMovement()->MaxAcceleration = 400.f;
+	// Set up root component
+	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	RootComponent = SceneComponent; 
 
-	// Disables controller rotation. This removes conflict between controller and pawn rotation when new direction is set. 
+	// Set up collision box and root component
+	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
+	CollisionBox->SetupAttachment(RootComponent);
+	CollisionBox->InitBoxExtent(FVector{ 45.f });
+
+	// Set up skeletal mesh component
+	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	MeshComponent->SetupAttachment(RootComponent);
+
+	// Set up characeter movement component
+	MovementComponent = CreateDefaultSubobject<UUnitMovementComponent>(TEXT("MovementComponent"));
+	MovementComponent->bConstrainToPlane = true;
+	MovementComponent->bSnapToPlaneAtStart = true;
+
+	// Disables controller rotation.This removes conflict between movement controller and pawn rotation when new direction is set.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -42,6 +55,7 @@ void AUnitBase::BeginPlay()
 	if (UnitController)
 	{
 		bIsSpawned = true;
+		UE_LOG(LogTemp, Warning, TEXT("UnitController %s"), *UnitController->GetName());
 	}
 }
 
@@ -60,14 +74,20 @@ void AUnitBase::MoveToDestination(FAIMoveRequest const& Destination)
 
 void AUnitBase::BeginAttack(AUnitBase* Unit)
 {
+	UCombatManager::AttackUnit(Unit);
 	// Move to unit locaiton
 	// Notify UnitManager that a unit is being attacked 
-	
 }
 
 float AUnitBase::GetUnitCapsuleSize() const
 {
-	return  GetCapsuleComponent()->GetScaledCapsuleRadius();
+	// TODO
+	return  45.f;
+}
+
+FVector AUnitBase::GetCollisionExtent() const
+{
+	return CollisionBox->GetScaledBoxExtent();
 }
 
 

@@ -9,7 +9,7 @@
 #include "UnitBase.generated.h"
 
 UCLASS()
-class LATE_API AUnitBase : public ACharacter
+class LATE_API AUnitBase : public APawn
 {
 	GENERATED_BODY()
 
@@ -32,6 +32,8 @@ public:
 	// Returns the unit capsule radius to screen size ratio
 	virtual float GetUnitCapsuleSize() const;
 
+	virtual FVector GetCollisionExtent() const;
+
 	// Checks if unit is spawned on the map 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsSpawned;
@@ -44,17 +46,26 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsHighlighted;
 
-	UPROPERTY()
-	class AUnitController* UnitController;
-
-	UPROPERTY()
-	class AUnitManager* UnitManager;
-
-	// The position of the unit in the UnitManager's unit array
-	UPROPERTY()
-	int32 Index; 
-
 	// Contains all unit properties such as health, armour and others
 	UPROPERTY(EditAnywhere, Category = "Unit Properties")
 	FUnitBaseAttributes UnitProperties;
+	
+	UPROPERTY()
+	class AUnitController* UnitController;
+
+	// The position of the unit in the UnitManager's unit array
+	UPROPERTY()
+	int32 Index;
+
+	UPROPERTY()
+	class USceneComponent* SceneComponent;
+
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* CollisionBox;
+
+	UPROPERTY(EditAnywhere)
+	class USkeletalMeshComponent* MeshComponent; 
+	
+	UPROPERTY(EditAnywhere)
+	class UUnitMovementComponent* MovementComponent;
 };

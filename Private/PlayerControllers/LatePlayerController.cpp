@@ -2,11 +2,12 @@
 
 #include "Public/PlayerControllers/LatePlayerController.h"
 #include "Public/Pawns/CameraPawn.h"
-#include "Public/GameplayManagers/UnitManager.h"
 #include "Public/Units/UnitBase.h"
+#include "Public/GameplayManagers/UnitManager.h"
 #include "LateGameModeBase.h"
 #include "Engine/World.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
+#include "Runtime/Engine/Classes/Engine/LocalPlayer.h"
 
 
 ALatePlayerController::ALatePlayerController()
@@ -28,6 +29,8 @@ ALatePlayerController::ALatePlayerController()
 	Destination.SetReachTestIncludesGoalRadius(false);
 	Destination.SetCanStrafe(false);
 	Destination.SetAcceptanceRadius(1.f);
+
+	HighlightedUnit = nullptr;
 }
 
 void ALatePlayerController::BeginPlay()
@@ -42,11 +45,13 @@ void ALatePlayerController::BeginPlay()
 		InitializeActiveViewport();
 	}
 
-	ALateGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ALateGameModeBase>();
-	if (GameMode->UnitManager)
+	UnitManager = GetWorld()->SpawnActor<AUnitManager>();
+
+	if (UnitManager)
 	{
-		UnitManager = GameMode->UnitManager;
+		UE_LOG(LogTemp, Warning, TEXT("Unit manager %s"), *UnitManager->GetName());
 	}
+	
 }
 
 void ALatePlayerController::Tick(float DeltaTime)
@@ -74,6 +79,8 @@ void ALatePlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("Dispatch", IE_Pressed, this, &ALatePlayerController::OnRMBPressed);
 	InputComponent->BindAction("Dispatch", IE_Released, this, &ALatePlayerController::OnRMBReleased);
+
+	InputComponent->BindAction("Attack", IE_Pressed, this, &ALatePlayerController::Attack);
 }
 
 void ALatePlayerController::OnLMBPressed()
@@ -139,7 +146,7 @@ void ALatePlayerController::DefineSelectionBox()
 	SelectionBox.PointB = MousePosition;
 }
 
-void ALatePlayerController::SelectMultipleUnits() const
+void ALatePlayerController::SelectMultipleUnits()
 {
 	TArray<AUnitBase*> Temp;
 
@@ -160,10 +167,10 @@ void ALatePlayerController::SelectMultipleUnits() const
 	UnitManager->SwapSelection(Temp);
 }
 
-void ALatePlayerController::SelectSingleUnit() const
+void ALatePlayerController::SelectSingleUnit()
 {
 	FHitResult HitResult;
-	if (GetHitResultAtScreenPosition(MousePosition, CurrentClickTraceChannel, false, HitResult))
+	if (GetHitResultAtScreenPosition(MousePosition, ECollisionChannel::ECC_Pawn, false, HitResult))
 	{
 		AUnitBase* Unit = Cast<AUnitBase>(HitResult.GetActor());
 		if (Unit)
@@ -174,7 +181,7 @@ void ALatePlayerController::SelectSingleUnit() const
 	}
 }
 
-void ALatePlayerController::HighlightMultipleUnits() const
+void ALatePlayerController::HighlightMultipleUnits()
 {
 	for (auto Unit : UnitManager->GetUnits())
 	{
@@ -195,22 +202,21 @@ void ALatePlayerController::HighlightMultipleUnits() const
 	}
 }
 
-void ALatePlayerController::HighlightSingleUnit() const
+void ALatePlayerController::HighlightSingleUnit()
 {
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectType; 
-	FHitResult HitResult; 
-	if (GetHitResultUnderCursorForObjects(ObjectType, false, HitResult))
+	FHitResult HitResult;
+	if (GetHitResultAtScreenPosition(MousePosition, ECollisionChannel::ECC_Pawn, false, HitResult))
 	{
 		AUnitBase* Unit = Cast<AUnitBase>(HitResult.GetActor());
 		if (Unit)
 		{
-			Unit->bIsHighlighted = true;
-			UnitManager->HighlightedUnit = Unit; 
+			HighlightedUnit = Unit;
+			HighlightedUnit->bIsHighlighted = true;
 		}
-		else if (UnitManager->HighlightedUnit)
+		else if (HighlightedUnit)
 		{
-			UnitManager->HighlightedUnit->bIsHighlighted = false;
-			UnitManager->HighlightedUnit = nullptr; 
+			HighlightedUnit->bIsHighlighted = false;
+			HighlightedUnit = nullptr;
 		}
 	}
 }
@@ -235,4 +241,14 @@ void ALatePlayerController::InitializeViewport()
 void ALatePlayerController::InitializeActiveViewport()
 {
 	CameraPawn->InitializeActiveViewport(ViewportSize, 0.f);
+}
+
+void ALatePlayerController::SpawnUnit(UPARAM() TSubclassOf<AUnitBase> UnitType, FVector const& Location)
+{
+	UnitManager->SpawnUnit(UnitType, Location);
+}
+
+void ALatePlayerController::Attack()
+{
+
 }

@@ -50,7 +50,4 @@ private:
 	// Array which holds only the selected units. This array should not be used to modify object state.
 	UPROPERTY()
 	TArray<class AUnitBase*> SelectedUnits;
-
-
-
 };

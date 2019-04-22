@@ -24,4 +24,7 @@ struct FUnitBaseAttributes
 
 	UPROPERTY(EditAnywhere)
 	float Damage;
+
+	UPROPERTY(EditAnywhere)
+	float Range;
 };
