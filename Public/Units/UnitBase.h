@@ -29,10 +29,8 @@ public:
 	// Sends a notification to the unit manager that an attack on the given unit has began
 	virtual void BeginAttack(AUnitBase* Unit);
 
-	// Returns the unit capsule radius to screen size ratio
-	virtual float GetUnitCapsuleSize() const;
-
-	virtual FVector GetCollisionExtent() const;
+	// Returns a 2D box with extent equal to the unit's collision box, in screen space
+	virtual FBox2D GetUnitBounds2D(FVector2D const& UnitLocationOnScreen) const;
 
 	// Checks if unit is spawned on the map 
 	UPROPERTY(BlueprintReadWrite)

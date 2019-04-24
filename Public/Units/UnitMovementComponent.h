@@ -13,5 +13,8 @@ UCLASS()
 class LATE_API UUnitMovementComponent : public UPawnMovementComponent
 {
 	GENERATED_BODY()
+
+public:
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 };

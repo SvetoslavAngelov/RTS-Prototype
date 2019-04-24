@@ -156,9 +156,7 @@ void ALatePlayerController::SelectMultipleUnits()
 		FVector2D UnitLocation;
 		if (ProjectWorldLocationToScreen(Unit->GetActorLocation(), UnitLocation))
 		{
-			float UnitCapsuleSize = Unit->GetUnitCapsuleSize();
-			FBox2D UnitBoundingBox{ UnitLocation - UnitCapsuleSize, UnitLocation + UnitCapsuleSize };
-			if (SelectionBox.Absolute().Intersect(UnitBoundingBox))
+			if (SelectionBox.Absolute().Intersect(Unit->GetUnitBounds2D(UnitLocation)))
 			{
 				Temp.Add(Unit);
 			}
@@ -188,9 +186,7 @@ void ALatePlayerController::HighlightMultipleUnits()
 		FVector2D UnitLocation;
 		if (ProjectWorldLocationToScreen(Unit->GetActorLocation(), UnitLocation))
 		{
-			float UnitCapsuleSize = Unit->GetUnitCapsuleSize();
-			FBox2D UnitBoundingBox{ UnitLocation - UnitCapsuleSize, UnitLocation + UnitCapsuleSize };
-			if (SelectionBox.Absolute().Intersect(UnitBoundingBox))
+			if (SelectionBox.Absolute().Intersect(Unit->GetUnitBounds2D(UnitLocation)))
 			{
 				Unit->bIsHighlighted = true;
 			}

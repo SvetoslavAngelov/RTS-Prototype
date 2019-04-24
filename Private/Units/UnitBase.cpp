@@ -35,6 +35,7 @@ AUnitBase::AUnitBase()
 
 	// Set up characeter movement component
 	MovementComponent = CreateDefaultSubobject<UUnitMovementComponent>(TEXT("MovementComponent"));
+	MovementComponent->UpdatedComponent = RootComponent;
 	MovementComponent->bConstrainToPlane = true;
 	MovementComponent->bSnapToPlaneAtStart = true;
 
@@ -55,7 +56,6 @@ void AUnitBase::BeginPlay()
 	if (UnitController)
 	{
 		bIsSpawned = true;
-		UE_LOG(LogTemp, Warning, TEXT("UnitController %s"), *UnitController->GetName());
 	}
 }
 
@@ -79,15 +79,8 @@ void AUnitBase::BeginAttack(AUnitBase* Unit)
 	// Notify UnitManager that a unit is being attacked 
 }
 
-float AUnitBase::GetUnitCapsuleSize() const
+FBox2D AUnitBase::GetUnitBounds2D(FVector2D const& UnitLocationOnScreen) const
 {
-	// TODO
-	return  45.f;
+	float CollisionBoxExtent = CollisionBox->GetScaledBoxExtent().X;
+	return FBox2D{ UnitLocationOnScreen - CollisionBoxExtent,  UnitLocationOnScreen + CollisionBoxExtent };
 }
-
-FVector AUnitBase::GetCollisionExtent() const
-{
-	return CollisionBox->GetScaledBoxExtent();
-}
-
-
