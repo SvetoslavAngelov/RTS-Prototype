@@ -9,6 +9,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Runtime/Engine/Public/DrawDebugHelpers.h"
 
 AUnitBase::AUnitBase()
 {
@@ -34,7 +35,7 @@ AUnitBase::AUnitBase()
 	MeshComponent->SetupAttachment(RootComponent);
 
 	// Set up characeter movement component
-	MovementComponent = CreateDefaultSubobject<UUnitMovementComponent>(TEXT("MovementComponent"));
+	MovementComponent = CreateDefaultSubobject<UUnitMovementComponent>(TEXT("CustomMovementComponent"));
 	MovementComponent->UpdatedComponent = RootComponent;
 	MovementComponent->bConstrainToPlane = true;
 	MovementComponent->bSnapToPlaneAtStart = true;
@@ -56,6 +57,11 @@ void AUnitBase::BeginPlay()
 	if (UnitController)
 	{
 		bIsSpawned = true;
+		UE_LOG(LogTemp, Warning, TEXT("Movement component %s"), *UnitController->GetName());
+	}
+	if (MovementComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Movement component %s"), *MovementComponent->GetName());
 	}
 }
 
@@ -66,10 +72,16 @@ void AUnitBase::Tick(float DeltaTime)
 
 void AUnitBase::MoveToDestination(FAIMoveRequest const& Destination)
 {
-	if (UnitController)
+	if (UnitController && MovementComponent)
 	{
-		UnitController->MoveTo(Destination);
+		TArray<FVector> UnitPath = UnitController->BuildUnitPath(Destination);
+		MovementComponent->RequestMove(Destination, UnitPath);
 	}
+}
+
+UPawnMovementComponent* AUnitBase::GetMovementComponent() const
+{
+	return MovementComponent;
 }
 
 void AUnitBase::BeginAttack(AUnitBase* Unit)

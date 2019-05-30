@@ -14,4 +14,6 @@ class LATE_API AUnitController : public AAIController
 {
 	GENERATED_BODY()
 
+public: 
+	TArray<FVector> BuildUnitPath(FAIMoveRequest const& MoveRequest);
 };

@@ -32,6 +32,8 @@ public:
 	// Returns a 2D box with extent equal to the unit's collision box, in screen space
 	virtual FBox2D GetUnitBounds2D(FVector2D const& UnitLocationOnScreen) const;
 
+	virtual class UPawnMovementComponent* GetMovementComponent() const override;
+
 	// Checks if unit is spawned on the map 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsSpawned;

@@ -15,8 +15,6 @@ class LATE_API AAttackUnit : public AUnitBase
 	GENERATED_BODY()
 	
 public: 
-	// Default ctor
-	AAttackUnit(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 

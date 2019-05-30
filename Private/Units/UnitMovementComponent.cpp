@@ -2,14 +2,31 @@
 
 #include "UnitMovementComponent.h"
 
+UUnitMovementComponent::UUnitMovementComponent(FObjectInitializer const& ObjectInitializer)
+	: Super( ObjectInitializer )
+{
+	MoveSpeed = 400.f;
+	Orientation = FRotator{ 0.f, 0.f, 0.f };
+	LastLocation = FVector{ 0.f, 0.f, 0.f };
+	IsPathUpdated = false;
+}
+
 void UUnitMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (UpdatedComponent)
+	if (PawnOwner || UpdatedComponent || !ShouldSkipUpdate(DeltaTime))
 	{
-		FVector MovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.f) * DeltaTime * 100.f;
-		FHitResult HitResult;
-		SafeMoveUpdatedComponent(MovementThisFrame, UpdatedComponent->GetComponentRotation(), true, HitResult);
+		if (IsPathUpdated)
+		{
+			Velocity = UpdatedComponent->GetForwardVector() * MoveSpeed * DeltaTime;
+			MoveUpdatedComponent(Velocity, Orientation, true);
+			UpdateComponentVelocity();
+		}
 	}
+}
+
+void UUnitMovementComponent::RequestMove(FAIMoveRequest const& Destination, TArray<FVector> const& UnitPath)
+{
+	
 }

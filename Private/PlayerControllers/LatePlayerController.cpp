@@ -46,12 +46,6 @@ void ALatePlayerController::BeginPlay()
 	}
 
 	UnitManager = GetWorld()->SpawnActor<AUnitManager>();
-
-	if (UnitManager)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Unit manager %s"), *UnitManager->GetName());
-	}
-	
 }
 
 void ALatePlayerController::Tick(float DeltaTime)
